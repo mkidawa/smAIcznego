@@ -1,6 +1,6 @@
 # smAIcznego
 
-smAIcznego to MVP aplikacja zaprojektowana do generowania spersonalizowanych planów dietetycznych przy użyciu zaawansowanych algorytmów AI, w tym Claude 3.7. Projekt ma na celu pomoc użytkownikom w wyborze diety idealnie dopasowanej do ich indywidualnych potrzeb żywieniowych, biorąc pod uwagę takie czynniki jak alergie, wymagania zdrowotne, preferencje smakowe czy styl życia.
+smAIcznego to MVP aplikacja zaprojektowana do generowania spersonalizowanych planów dietetycznych przy użyciu zaawansowanych algorytmów AI, w tym Openrouter.ai. Projekt ma na celu pomoc użytkownikom w wyborze diety idealnie dopasowanej do ich indywidualnych potrzeb żywieniowych, biorąc pod uwagę takie czynniki jak alergie, wymagania zdrowotne, preferencje smakowe czy styl życia.
 
 ## Funkcjonalności
 

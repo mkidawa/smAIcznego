@@ -2,7 +2,7 @@
 
 ## 1. Przegląd produktu
 
-Aplikacja smaAIcznego to MVP mające na celu pomoc użytkownikom w wyborze i personalizacji diety, która spełnia ich indywidualne potrzeby żywieniowe oraz preferencje. Główną funkcjonalnością jest generowanie diety przy użyciu systemu AI (Claude 3.7) na podstawie określonych parametrów, przy czym z uwzględnieniem stałych preferencji użytkownika zapisanych w profilu. Aplikacja dodatkowo generuje statyczną listę produktów zakupowych oraz umożliwia bezpieczny dostęp do informacji poprzez system kont użytkowników.
+Aplikacja smaAIcznego to MVP mające na celu pomoc użytkownikom w wyborze i personalizacji diety, która spełnia ich indywidualne potrzeby żywieniowe oraz preferencje. Główną funkcjonalnością jest generowanie diety przy użyciu systemu AI (Openrouter.ai) na podstawie określonych parametrów, przy czym z uwzględnieniem stałych preferencji użytkownika zapisanych w profilu. Aplikacja dodatkowo generuje statyczną listę produktów zakupowych oraz umożliwia bezpieczny dostęp do informacji poprzez system kont użytkowników.
 
 ## 2. Problem użytkownika
 
@@ -12,7 +12,7 @@ Użytkownicy borykają się z problemem płatnych i niewystarczająco elastyczny
 
 1. Generowanie diety:
    - Umożliwienie wyboru parametrów diety: kaloryczność na dzień, okres trwania (maks. 14 dni), liczba posiłków na dzień oraz rodzaj kuchni (np. azjatycka, włoska, meksykańska).
-   - Wykorzystanie systemu AI (Claude 3.7) do generowania planu diety na podstawie podanych parametrów.
+   - Wykorzystanie systemu AI (Openrouter.ai) do generowania planu diety na podstawie podanych parametrów.
 2. Profil użytkownika:
    - Zapisywanie stałych preferencji użytkownika (alergie, wymagania zdrowotne).
    - Przechowywanie dodatkowych danych profilowych, takich jak wiek i waga (aktualizowane rzadko).
@@ -56,7 +56,7 @@ Użytkownicy borykają się z problemem płatnych i niewystarczająco elastyczny
 
 - ID: US-003
 - Tytuł: Generowanie spersonalizowanej diety
-- Opis: Użytkownik wprowadza parametry diety (kaloryczność na dzień, okres trwania, liczba posiłków, rodzaj kuchni) i uruchamia proces generowania diety za pomocą AI (Claude 3.7). Wygenerowany plan pozostaje aktywny przez określony czas (do momentu wygaśnięcia lub usunięcia).
+- Opis: Użytkownik wprowadza parametry diety (kaloryczność na dzień, okres trwania, liczba posiłków, rodzaj kuchni) i uruchamia proces generowania diety za pomocą AI (Openrouter.ai). Wygenerowany plan pozostaje aktywny przez określony czas (do momentu wygaśnięcia lub usunięcia).
 - Kryteria akceptacji:
   - Użytkownik wprowadza wszystkie wymagane parametry w formularzu.
   - System generuje plan diety odpowiadający podanym kryteriom.
