@@ -43,3 +43,8 @@ CREATE TABLE Preferences (
     terms_accepted BOOLEAN NOT NULL DEFAULT false
 );
 ```
+
+Additional notes:
+
+- One user can have only one active diet at a time but can have many completed diets.
+- One diet can have many meals.
