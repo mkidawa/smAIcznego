@@ -2,6 +2,15 @@
 -- Opis: Definiuje podstawowe typy i tabele dla aplikacji smaAIcznego
 -- Data: 2024-03-19
 
+-- Utworzenie typów wyliczeniowych
+create type meal_type as enum (
+  'breakfast',
+  'second breakfast',
+  'lunch',
+  'afternoon snack',
+  'dinner'
+);
+
 -- Utworzenie typu wyliczeniowego dla rodzajów kuchni
 create type cuisine_type as enum (
   'polish',
@@ -33,9 +42,7 @@ create table meal (
   id serial primary key,
   diet_id integer not null references diet(id) on delete cascade,
   day integer not null check (day > 0),
-  meal_type varchar(50) not null check (
-    meal_type in ('breakfast', 'second breakfast', 'lunch', 'afternoon snack', 'dinner')
-  ),
+  meal_type meal_type not null,
   instructions text,
   approx_calories integer
 );
