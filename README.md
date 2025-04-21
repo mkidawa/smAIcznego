@@ -1,28 +1,86 @@
-# smAIcznego
+# smaAIcznego
 
-smAIcznego to MVP aplikacja zaprojektowana do generowania spersonalizowanych planów dietetycznych przy użyciu zaawansowanych algorytmów AI, w tym Openrouter.ai. Projekt ma na celu pomoc użytkownikom w wyborze diety idealnie dopasowanej do ich indywidualnych potrzeb żywieniowych, biorąc pod uwagę takie czynniki jak alergie, wymagania zdrowotne, preferencje smakowe czy styl życia.
+## Spis treści
 
-## Funkcjonalności
+- [Opis Projektu](#opis-projektu)
+- [Stos Technologiczny](#stos-technologiczny)
+- [Uruchomienie Lokalnie](#uruchomienie-lokalnie)
+- [Dostępne Skrypty](#dostępne-skrypty)
+- [Zakres Projektu](#zakres-projektu)
+- [Status Projektu](#status-projektu)
+- [Licencja](#licencja)
 
-- **Generowanie diety:** Użytkownik może wybrać parametry takie jak kaloryczność, okres trwania (do 14 dni), liczba posiłków na dzień oraz rodzaj kuchni (np. azjatycka, włoska, meksykańska). System AI generuje spersonalizowany plan diety na podstawie tych danych.
-- **Profil użytkownika:** Możliwość zapisywania stałych preferencji, takich jak alergie i wymagania zdrowotne, oraz dodatkowych informacji (wiek, waga), które wpływają na dobór diety.
+## Opis Projektu
+
+Aplikacja **smaAIcznego** to MVP mające na celu pomoc użytkownikom w wyborze i personalizacji diety dostosowanej do indywidualnych potrzeb żywieniowych. Główne funkcjonalności obejmują:
+
+- Generowanie spersonalizowanych planów dietetycznych przy użyciu systemu AI (Openrouter.ai) na podstawie wybranych parametrów (kaloryczność, liczba posiłków, okres trwania diety, rodzaj kuchni).
+- Zapisywanie stałych preferencji użytkownika, takich jak alergie, wymagania zdrowotne, wiek czy waga.
+- Automatyczne tworzenie statycznej listy zakupów na podstawie wygenerowanego planu diety.
+- Bezpieczną rejestrację i logowanie oraz zarządzanie kontem użytkownika.
+
+## Stos Technologiczny
+
+**Frontend:**
+
+- Astro 5
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Shadcn/ui
+
+**Backend:**
+
+- Supabase (PostgreSQL, autentykacja użytkowników)
+- Integracja z Openrouter.ai
+
+**CI/CD i Hosting:**
+
+- Github Actions
+- DigitalOcean
+
+## Uruchomienie Lokalnie
+
+1. Upewnij się, że masz zainstalowaną odpowiednią wersję Node.js (sprawdź zawartość pliku `.nvmrc`).
+2. Zainstaluj zależności:
+
+   ```bash
+   npm install
+   ```
+
+3. Uruchom aplikację w trybie developerskim:
+
+   ```bash
+   npm run dev
+   ```
+
+## Dostępne Skrypty
+
+- `npm run dev` – Uruchamia serwer developerski Astro.
+- `npm run build` – Buduje aplikację do środowiska produkcyjnego.
+- `npm run preview` – Podgląd zbudowanej aplikacji.
+- `npm run lint` – Sprawdza kod za pomocą ESLint.
+- `npm run lint:fix` – Automatycznie naprawia wykryte problemy w kodzie.
+- `npm run format` – Formatuje kod przy użyciu Prettier.
+
+## Zakres Projektu
+
+Projekt skupia się na realizacji następujących funkcjonalności:
+
+- **Generowanie diety:** Użytkownik może wprowadzić parametry takie jak kaloryczność, liczba posiłków, okres trwania diety oraz rodzaj kuchni, na podstawie których system AI generuje plan żywieniowy.
+- **Profil użytkownika:** Rejestracja, logowanie oraz możliwość edycji danych profilowych (wiek, waga, alergie, wymagania zdrowotne).
 - **Lista zakupów:** Automatyczne generowanie statycznej listy zakupów na podstawie wygenerowanego planu diety.
-- **System kont użytkowników:** Bezpieczna rejestracja, logowanie oraz zarządzanie kontem, co umożliwia przechowywanie danych użytkownika i jego preferencji.
-- **Walidacja formularza:** Podstawowe mechanizmy weryfikacji danych wprowadzanych przez użytkownika.
+- **Wyświetlanie diety:** Prezentacja pełnego planu diety wraz z harmonogramem posiłków oraz możliwością podglądu szczegółowych przepisów.
 
-## Cel projektu
+\_Należy zauważyć, że w ramach MVP:
 
-Celem projektu jest stworzenie elastycznego i ekonomicznego narzędzia, które rozwiązuje problem niedostosowanych i często kosztownych planów dietetycznych dostępnych na rynku. Aplikacja umożliwia szybkie generowanie spersonalizowanych planów diet na podstawie indywidualnych potrzeb użytkownika.
+- Nie implementujemy systemu rekomendacji diet.
+- Lista zakupów pozostaje statyczna bez możliwości edycji.\_
 
-## Granice produktu
+## Status Projektu
 
-- Brak systemu rekomendacji diet.
-- Lista zakupów pozostaje statyczna i nie jest dynamicznie aktualizowana.
-- Ograniczenia w kontroli składu diety oraz oceny wpływu diety na zdrowie.
+Projekt znajduje się w fazie MVP. Główne funkcjonalności są wdrażane i testowane. Dalszy rozwój planowany jest po uzyskaniu opinii użytkowników.
 
-## Jak zacząć
+## Licencja
 
-1. Zarejestruj się lub zaloguj do systemu.
-2. Uzupełnij profil, podając informacje takie jak alergie, wymagania zdrowotne, wiek oraz wagę.
-3. Wprowadź parametry diety (kaloryczność, okres trwania, liczba posiłków, rodzaj kuchni).
-4. Uruchom proces generowania planu diety i zapoznaj się z wygenerowanym planem oraz listą zakupów.
+Projekt jest udostępniany na licencji MIT.
