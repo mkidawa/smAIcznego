@@ -4,6 +4,7 @@ import type { Database } from "./db/database.types";
 export type CuisineType = Database["public"]["Enums"]["cuisine_type"];
 export type DietStatus = Database["public"]["Enums"]["diet_status"];
 export type MealType = Database["public"]["Enums"]["meal_type"];
+export type GenerationStatus = "pending" | "completed";
 
 // ======================= PROFIL =======================
 /**
@@ -126,7 +127,7 @@ export interface CreateGenerationCommand {
  */
 export interface CreateGenerationResponse {
   generation_id: number;
-  status: "pending" | "completed";
+  status: GenerationStatus;
 }
 
 /**
@@ -134,7 +135,7 @@ export interface CreateGenerationResponse {
  */
 export interface GenerationResponse {
   generation_id: number;
-  status: "pending" | "completed";
+  status: GenerationStatus;
   preview?: CreateDietResponse; // Przykładowy podgląd diety oparty na CreateDietResponse
   created_at: string;
 }

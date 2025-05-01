@@ -75,6 +75,7 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 - `user_id` INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
 - `source_text` TEXT NOT NULL -- tekst wejściowy użytkownika przekazany do AI
 - `metadata` JSONB NOT NULL DEFAULT '{}' -- metadane zwrócone przez usługę AI (np. model, tokeny, temperatura, itp.)
+- `status` VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed'))
 - `created_at` TIMESTAMP NOT NULL DEFAULT NOW()
 - **Indeks:** IDX_generation_user_id na kolumnie `user_id`
 

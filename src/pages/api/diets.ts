@@ -2,7 +2,9 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateDietCommand, CreateDietResponse } from "../../types";
 
-export const post: APIRoute = async ({ request, locals }) => {
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Parsowanie i walidacja danych wejściowych
     const body = await request.json();
