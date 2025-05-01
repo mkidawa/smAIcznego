@@ -60,12 +60,32 @@ CREATE TYPE cuisine_type AS ENUM ('polish', 'italian', 'indian', 'asian', 'vegan
 - `created_at` TIMESTAMP NOT NULL DEFAULT NOW()
 - **Indeks:** IDX_recipe_meal_id na kolumnie `meal_id`
 
+### 1.6. Generation
+
+- `id` SERIAL PRIMARY KEY
+- `user_id` INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+- `source_text` TEXT NOT NULL -- tekst wejściowy użytkownika przekazany do AI
+- `metadata` JSONB NOT NULL DEFAULT '{}' -- metadane zwrócone przez usługę AI (np. model, tokeny, temperatura, itp.)
+- `created_at` TIMESTAMP NOT NULL DEFAULT NOW()
+- **Indeks:** IDX_generation_user_id na kolumnie `user_id`
+
+### 1.7. GenerationLog
+
+- `id` SERIAL PRIMARY KEY
+- `generation_id` INTEGER NOT NULL REFERENCES Generation(id) ON DELETE CASCADE
+- `event_type` VARCHAR(50) NOT NULL CHECK (event_type IN ('request', 'response', 'error')) -- typ zdarzenia logowanego
+- `message` TEXT -- treść logu lub komunikatu błędu
+- `created_at` TIMESTAMP NOT NULL DEFAULT NOW()
+- **Indeks:** IDX_generationlog_generation_id na kolumnie `generation_id`
+
 ## 2. Relacje między tabelami
 
 - Jeden użytkownik może mieć wiele diet (`user_id` w tabeli Diet).
 - Każda dieta może mieć wiele posiłków (`diet_id` w tabeli Meal).
 - Każda dieta ma jedną listę zakupów (`diet_id` w tabeli ShoppingList).
 - Opcjonalnie, każdy posiłek może mieć powiązany jeden przepis (`meal_id` w tabeli Recipe).
+- Jeden użytkownik może mieć wiele generacji (`user_id` w tabeli Generation).
+- Każda generacja może mieć wiele wpisów w logu (`generation_id` w tabeli GenerationLog).
 
 ## 3. Indeksy
 
@@ -74,6 +94,8 @@ CREATE TYPE cuisine_type AS ENUM ('polish', 'italian', 'indian', 'asian', 'vegan
 - `IDX_preferences_user_id` na tabeli Preferences (kolumna `user_id`).
 - `IDX_shoppinglist_diet_id` na tabeli ShoppingList (kolumna `diet_id`).
 - `IDX_recipe_meal_id` na tabeli Recipe (kolumna `meal_id`).
+- `IDX_generation_user_id` na tabeli Generation (kolumna `user_id`).
+- `IDX_generationlog_generation_id` na tabeli GenerationLog (kolumna `generation_id`).
 
 ## 4. Zasady RLS (Row-Level Security)
 
