@@ -122,6 +122,30 @@ Validation rules:
 - `gender` ∈ {"male","female","other"} (open enum)
 - `terms_accepted` must be `true` on first save
 
+#### 2.3.2 Paginated GET Diets
+
+| Method | Path   | Description                         |
+| ------ | ------ | ----------------------------------- |
+| GET    | /diets | Retrieve a paginated list of Diets. |
+
+Query Parameters:
+
+- `page` (integer, default: 1): The page number to retrieve.
+- `per_page` (integer, default: 10, maximum: 50): Number of diets per page.
+
+Successful Response (HTTP 200 OK):
+
+```json
+{
+  "diets": [
+    // Array of diet objects
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 57
+}
+```
+
 ---
 
 ### 2.4 Meals _(step 2 of 3)_
