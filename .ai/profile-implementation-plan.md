@@ -18,19 +18,19 @@ Endpoint służy do zarządzania profilem użytkownika. Umożliwia pobieranie (G
     - `gender` (string: 'male', 'female', 'other', wymagane)
     - `weight` (number, wymagane)
     - `allergies` (string[], wymagane)
-    - `termsAccepted` (boolean, wymagane - musi być true przy pierwszej rejestracji)
+    - `terms_accepted` (boolean, wymagane - musi być true przy pierwszej rejestracji)
 
 ## 3. Wykorzystywane typy
 
-- **CreateProfileCommand**: DTO używane przy tworzeniu profilu, zawiera: `age`, `gender`, `weight`, `allergies`, `termsAccepted`.
+- **CreateProfileCommand**: DTO używane przy tworzeniu profilu, zawiera: `age`, `gender`, `weight`, `allergies`, `terms_accepted`.
 - **UpdateProfileCommand**: DTO używane przy aktualizacji profilu, wszystkie pola są opcjonalne.
-- **ProfileResponse**: DTO odpowiedzi, zawiera: `id`, `age`, `gender`, `weight`, `allergies`, `termsAccepted`, `createdAt`, oraz opcjonalnie `updatedAt`.
+- **ProfileResponse**: DTO odpowiedzi, zawiera: `id`, `age`, `gender`, `weight`, `allergies`, `terms_accepted`, `created_at`, oraz opcjonalnie `updated_at`.
 
 ## 4. Szczegóły odpowiedzi
 
 - **Udane operacje:**
   - POST: HTTP 201 Created, zwraca obiekt profilu typu ProfileResponse
-  - PUT: HTTP 200 OK, zwraca obiekt profilu z opcjonalnym polem `updatedAt`
+  - PUT: HTTP 200 OK, zwraca obiekt profilu z opcjonalnym polem `updated_at`
   - GET: HTTP 200 OK, zwraca obiekt profilu
 - **Błędy:**
   - 400 (VALIDATION_FAILED): Nieprawidłowe dane wejściowe
@@ -54,7 +54,7 @@ Endpoint służy do zarządzania profilem użytkownika. Umożliwia pobieranie (G
 
 - **Uwierzytelnianie:** Wszystkie żądania muszą zawierać poprawny token JWT.
 - **Autoryzacja:** Dostęp do danych jest zabezpieczony poprzez mechanizmy RLS w bazie danych (user_id musi odpowiadać tokenowi JWT).
-- **Walidacja danych:** Wszystkie dane wejściowe są weryfikowane pod kątem poprawności (np. `age` >= 0, `weight` >= 0, `termsAccepted` musi być true przy pierwszym zapisie).
+- **Walidacja danych:** Wszystkie dane wejściowe są weryfikowane pod kątem poprawności (np. `age` >= 0, `weight` >= 0, `terms_accepted` musi być true przy pierwszym zapisie).
 - **Bezpieczna transmisja:** Zapewnienie komunikacji poprzez HTTPS.
 
 ## 7. Obsługa błędów

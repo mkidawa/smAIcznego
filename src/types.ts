@@ -14,7 +14,7 @@ export interface CreateProfileCommand {
   gender: "male" | "female" | "other";
   weight: number;
   allergies: string[];
-  termsAccepted: true; // musi być true przy pierwszym zapisie
+  terms_accepted: true; // musi być true przy pierwszym zapisie
 }
 
 /**
@@ -31,9 +31,9 @@ export interface ProfileResponse {
   gender: "male" | "female" | "other";
   weight: number;
   allergies: string[];
-  termsAccepted: boolean;
-  createdAt: string;
-  updatedAt?: string;
+  terms_accepted: boolean;
+  created_at: string;
+  updated_at?: string;
 }
 
 // ======================= DIETA =======================
@@ -42,19 +42,19 @@ export interface ProfileResponse {
  * Pochodzi z modelu bazy danych 'diet', mapując pola z notacją snake_case na camelCase.
  */
 export interface CreateDietCommand {
-  numberOfDays: number; // zakres 1-14
-  caloriesPerDay: number; // wartość > 0
-  preferredCuisines: CuisineType[]; // lista preferowanych kuchni
-  generationId: number; // musi istnieć i należeć do użytkownika
+  number_of_days: number; // zakres 1-14
+  calories_per_day: number; // wartość > 0
+  preferred_cuisines: CuisineType[]; // lista preferowanych kuchni
+  generation_id: number; // musi istnieć i należeć do użytkownika
 }
 
 /**
  * DTO odpowiedzi przy tworzeniu diety.
  */
 export interface CreateDietResponse {
-  dietId: number;
+  diet_id: number;
   status: DietStatus; // 'draft', 'meals_ready', 'ready'
-  generationId: number;
+  generation_id: number;
 }
 
 // ======================= POSIŁKI =======================
@@ -74,9 +74,9 @@ export interface CreateRecipeCommand {
  */
 export interface CreateMealCommand {
   day: number; // wartość > 0 i ≤ numberOfDays z diety
-  mealType: MealType;
+  meal_type: MealType;
   instructions?: string;
-  approxCalories?: number;
+  approx_calories?: number;
   recipe?: CreateRecipeCommand; // opcjonalny przepis
 }
 
@@ -105,7 +105,7 @@ export interface CreateShoppingListCommand {
  * DTO odpowiedzi przy tworzeniu listy zakupów.
  */
 export interface CreateShoppingListResponse {
-  shoppingListId: number;
+  shopping_list_id: number;
 }
 
 // ======================= GENERACJA =======================
@@ -115,17 +115,17 @@ export interface CreateShoppingListResponse {
  * mapując je na odpowiednie encje (model 'generation').
  */
 export interface CreateGenerationCommand {
-  numberOfDays: number;
-  caloriesPerDay: number;
-  mealsPerDay: number;
-  preferredCuisines: CuisineType[];
+  number_of_days: number;
+  calories_per_day: number;
+  meals_per_day: number;
+  preferred_cuisines: CuisineType[];
 }
 
 /**
  * DTO odpowiedzi przy tworzeniu rekordu generacji.
  */
 export interface CreateGenerationResponse {
-  generationId: number;
+  generation_id: number;
   status: "pending" | "completed";
 }
 
@@ -133,10 +133,10 @@ export interface CreateGenerationResponse {
  * DTO odpowiedzi przy pobieraniu stanu generacji.
  */
 export interface GenerationResponse {
-  generationId: number;
+  generation_id: number;
   status: "pending" | "completed";
   preview?: CreateDietResponse; // Przykładowy podgląd diety oparty na CreateDietResponse
-  createdAt: string;
+  created_at: string;
 }
 
 // ======================= PRZEPIS =======================
@@ -149,5 +149,5 @@ export interface RecipeResponse {
   title: string;
   description: string | null;
   instructions: string | null;
-  createdAt: string;
+  created_at: string;
 }

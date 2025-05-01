@@ -33,7 +33,7 @@ Request body (`POST` or `PUT`):
   "gender": "female",
   "weight": 68.5,
   "allergies": ["peanuts", "lactose"],
-  "termsAccepted": true
+  "terms_accepted": true
 }
 ```
 
@@ -46,12 +46,12 @@ Successful `POST` response (HTTP 201 Created):
   "gender": "female",
   "weight": 68.5,
   "allergies": ["peanuts", "lactose"],
-  "termsAccepted": true,
-  "createdAt": "2024-05-30T12:34:56Z"
+  "terms_accepted": true,
+  "created_at": "2024-05-30T12:34:56Z"
 }
 ```
 
-Successful `PUT` response (HTTP 200 OK) mirrors the above but includes `updatedAt`.
+Successful `PUT` response (HTTP 200 OK) mirrors the above but includes `updated_at`.
 
 Error cases:
 | HTTP | Code | Condition |
@@ -67,7 +67,7 @@ Validation rules:
 - `age` >= 0, integer
 - `weight` >= 0, numeric(5,2)
 - `gender` ∈ {"male","female","other"} (open enum)
-- `termsAccepted` must be `true` on first save
+- `terms_accepted` must be `true` on first save
 
 ---
 
@@ -83,10 +83,10 @@ Request body:
 
 ```json
 {
-  "numberOfDays": 7,
-  "caloriesPerDay": 2200,
-  "preferredCuisines": ["italian", "vegetarian"],
-  "generationId": 456
+  "number_of_days": 7,
+  "calories_per_day": 2200,
+  "preferred_cuisines": ["italian", "vegetarian"],
+  "generation_id": 456
 }
 ```
 
@@ -94,9 +94,9 @@ Response (HTTP 201):
 
 ```json
 {
-  "dietId": 123,
+  "diet_id": 123,
   "status": "draft", // becomes "ready" after steps 2 & 3
-  "generationId": 456
+  "generation_id": 456
 }
 ```
 
@@ -120,7 +120,7 @@ Validation rules:
 - `age` >= 0, integer
 - `weight` >= 0, numeric(5,2)
 - `gender` ∈ {"male","female","other"} (open enum)
-- `termsAccepted` must be `true` on first save
+- `terms_accepted` must be `true` on first save
 
 ---
 
@@ -135,21 +135,19 @@ Validation rules:
 Bulk create request:
 
 ```json
-{
-  "meals": [
-    {
-      "day": 1,
-      "mealType": "breakfast",
-      "instructions": "Omelette with spinach",
-      "approxCalories": 400,
-      "recipe": {
-        "title": "Spinach Omelette",
-        "description": "Fluffy omelette",
-        "instructions": "Beat eggs..."
-      }
+[
+  {
+    "day": 1,
+    "meal_type": "breakfast",
+    "instructions": "Omelette with spinach",
+    "approx_calories": 400,
+    "recipe": {
+      "title": "Spinach Omelette",
+      "description": "Fluffy omelette",
+      "instructions": "Beat eggs..."
     }
-  ]
-}
+  }
+]
 ```
 
 Response: HTTP 201 with array of created meal IDs.
@@ -173,7 +171,7 @@ Request body:
 }
 ```
 
-Response: HTTP 201 with created `shoppingListId`.
+Response: HTTP 201 with created `shopping_list_id`.
 
 When both Meals and ShoppingList are present, the API transitions Diet.status → `ready`.
 
@@ -201,10 +199,10 @@ POST request body mirrors diet parameters:
 
 ```json
 {
-  "numberOfDays": 7,
-  "caloriesPerDay": 2200,
-  "mealsPerDay": 5,
-  "preferredCuisines": ["italian", "vegetarian"]
+  "number_of_days": 7,
+  "calories_per_day": 2200,
+  "meals_per_day": 5,
+  "preferred_cuisines": ["italian", "vegetarian"]
 }
 ```
 
@@ -212,7 +210,7 @@ Successful response (HTTP 202 Accepted):
 
 ```json
 {
-  "generationId": 456,
+  "generation_id": 456,
   "status": "pending"
 }
 ```
@@ -229,12 +227,12 @@ GET `/generations/{id}` response when completed:
 
 ```json
 {
-  "generationId": 456,
+  "generation_id": 456,
   "status": "completed",
   "preview": {
     /* diet preview identical to final Diet shape */
   },
-  "createdAt": "2024-06-01T10:00:00Z"
+  "created_at": "2024-06-01T10:00:00Z"
 }
 ```
 
@@ -258,13 +256,13 @@ Error cases similar to other endpoints (`GENERATION_NOT_FOUND`, 403 on RLS, etc.
 
 ### 4.1 Validation matrix (selected)
 
-| Field               | Constraint                | Error code                        |
-| ------------------- | ------------------------- | --------------------------------- |
-| Diet.numberOfDays   | 1 – 14                    | 422 `NUMBER_OF_DAYS_OUT_OF_RANGE` |
-| Diet.caloriesPerDay | > 0                       | 422 `CALORIES_INVALID`            |
-| Meal.day            | > 0 & ≤ Diet.numberOfDays | 422 `MEAL_DAY_INVALID`            |
-| Meal.mealType       | Enum set                  | 422 `MEAL_TYPE_INVALID`           |
-| Profile.weight      | ≥ 0                       | 422 `WEIGHT_INVALID`              |
+| Field                 | Constraint                  | Error code                        |
+| --------------------- | --------------------------- | --------------------------------- |
+| Diet.number_of_days   | 1 – 14                      | 422 `NUMBER_OF_DAYS_OUT_OF_RANGE` |
+| Diet.calories_per_day | > 0                         | 422 `CALORIES_INVALID`            |
+| Meal.day              | > 0 & ≤ Diet.number_of_days | 422 `MEAL_DAY_INVALID`            |
+| Meal.meal_type        | Enum set                    | 422 `MEAL_TYPE_INVALID`           |
+| Profile.weight        | ≥ 0                         | 422 `WEIGHT_INVALID`              |
 
 ### 4.2 Business rules implementation
 
@@ -303,10 +301,10 @@ HTTP codes:
 
 ## 6. Pagination, Filtering & Sorting
 
-- Pagination: `page` (1-based) & `perPage` (default 10, max 50).
+- Pagination: `page` (1-based) & `per_page` (default 10, max 50).
 - Cursor-based pagination planned for v2 (GenerationLog heavy lists).
 - Filtering: standard query params per endpoint (documented above).
-- Sorting: `sortBy` (field name) & `order` (asc|desc). Defaults: createdAt desc.
+- Sorting: `sort_by` (field name) & `order` (asc|desc). Defaults: created_at desc.
 
 ---
 
