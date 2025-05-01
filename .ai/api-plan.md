@@ -85,7 +85,8 @@ Request body:
 {
   "numberOfDays": 7,
   "caloriesPerDay": 2200,
-  "preferredCuisines": ["italian", "vegetarian"]
+  "preferredCuisines": ["italian", "vegetarian"],
+  "generationId": 456
 }
 ```
 
@@ -94,16 +95,32 @@ Response (HTTP 201):
 ```json
 {
   "dietId": 123,
-  "status": "draft" // becomes "ready" after steps 2 & 3
+  "status": "draft", // becomes "ready" after steps 2 & 3
+  "generationId": 456
 }
 ```
 
 Back-end actions:
 
-1. Validate fields (days ≤14, calories >0, etc.).
+1. Validate fields (days ≤14, calories >0, generationId exists, etc.).
 2. Insert Diet row; set `status = draft`.
+3. Verify that the generation exists and belongs to the current user.
 
-Error cases similar to before (validation, duplicate period).
+Error cases:
+| HTTP | Code | Condition |
+|------|----------------------|---------------------------------------------|
+| 400 | VALIDATION_FAILED | Payload violates constraints. |
+| 401 | UNAUTHORIZED | Missing/invalid JWT. |
+| 403 | FORBIDDEN | RLS or other auth rule blocked action. |
+| 404 | GENERATION_NOT_FOUND | Specified generationId does not exist or belongs to another user. |
+| 409 | DIET_ALREADY_EXISTS | Diet for this generation already exists. |
+
+Validation rules:
+
+- `age` >= 0, integer
+- `weight` >= 0, numeric(5,2)
+- `gender` ∈ {"male","female","other"} (open enum)
+- `termsAccepted` must be `true` on first save
 
 ---
 

@@ -8,18 +8,27 @@
 CREATE TYPE cuisine_type AS ENUM ('polish', 'italian', 'indian', 'asian', 'vegan', 'vegetarian', 'gluten-free', 'keto', 'paleo');
 ```
 
+### `diet_status`
+
+```sql
+CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
+```
+
 ## 1. Tabele
 
 ### 1.1. Diet
 
 - `id` SERIAL PRIMARY KEY
 - `user_id` INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+- `generation_id` INTEGER NOT NULL REFERENCES Generation(id) ON DELETE CASCADE
 - `number_of_days` INTEGER NOT NULL CHECK (number_of_days > 0)
 - `calories_per_day` INTEGER NOT NULL
 - `preferred_cuisines` cuisine_type[] NOT NULL DEFAULT '{}'
+- `status` diet_status NOT NULL DEFAULT 'draft'
 - `created_at` TIMESTAMP NOT NULL DEFAULT NOW()
 - `end_date` TIMESTAMP NOT NULL -- data zakończenia diety
 - **Indeks:** IDX_diet_user_id na kolumnie `user_id`
+- **Indeks:** IDX_diet_generation_id na kolumnie `generation_id`
 
 ### 1.2. Meal
 
@@ -90,6 +99,7 @@ CREATE TYPE cuisine_type AS ENUM ('polish', 'italian', 'indian', 'asian', 'vegan
 ## 3. Indeksy
 
 - `IDX_diet_user_id` na tabeli Diet (kolumna `user_id`).
+- `IDX_diet_generation_id` na tabeli Diet (kolumna `generation_id`).
 - `IDX_meal_diet_id` na tabeli Meal (kolumna `diet_id`).
 - `IDX_preferences_user_id` na tabeli Preferences (kolumna `user_id`).
 - `IDX_shoppinglist_diet_id` na tabeli ShoppingList (kolumna `diet_id`).
