@@ -5,7 +5,7 @@
 | Resource      | DB Table                | Description                                           |
 | ------------- | ----------------------- | ----------------------------------------------------- |
 | User          | (Supabase `auth.users`) | Authenticated application user.                       |
-| Profile       | `Preferences`           | Extended user profile (age, weight, allergies, etc.). |
+| Profile       | `Profile`               | Extended user profile (age, weight, allergies, etc.). |
 | Diet          | `Diet`                  | Generated meal-plan entity for a given user.          |
 | Meal          | `Meal`                  | Single meal that belongs to a Diet & Day.             |
 | Recipe        | `Recipe`                | Detailed cooking instructions for a Meal.             |
@@ -21,7 +21,7 @@
 
 | Method | Path     | Description                                                          |
 | ------ | -------- | -------------------------------------------------------------------- |
-| GET    | /profile | Fetch current user profile (`Preferences`).                          |
+| GET    | /profile | Fetch current user profile (`Profile`).                              |
 | POST   | /profile | Create initial profile record. Fails with 409 if one already exists. |
 | PUT    | /profile | Update existing profile (all fields optional, must already exist).   |
 

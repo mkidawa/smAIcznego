@@ -40,7 +40,7 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 - `approx_calories` INTEGER
 - **Indeks:** IDX_meal_diet_id na kolumnie `diet_id`
 
-### 1.3. Preferences
+### 1.3. Profile
 
 - `user_id` INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
 - `age` INTEGER
@@ -48,7 +48,7 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 - `weight` DECIMAL(5,2)
 - `allergies` TEXT[] NOT NULL DEFAULT '{}'
 - `terms_accepted` BOOLEAN NOT NULL DEFAULT false
-- **Indeks:** IDX_preferences_user_id na kolumnie `user_id`
+- **Indeks:** IDX_profile_user_id na kolumnie `user_id`
 
 ### 1.4. ShoppingList
 
@@ -101,7 +101,7 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 - `IDX_diet_user_id` na tabeli Diet (kolumna `user_id`).
 - `IDX_diet_generation_id` na tabeli Diet (kolumna `generation_id`).
 - `IDX_meal_diet_id` na tabeli Meal (kolumna `diet_id`).
-- `IDX_preferences_user_id` na tabeli Preferences (kolumna `user_id`).
+- `IDX_profile_user_id` na tabeli Profile (kolumna `user_id`).
 - `IDX_shoppinglist_diet_id` na tabeli ShoppingList (kolumna `diet_id`).
 - `IDX_recipe_meal_id` na tabeli Recipe (kolumna `meal_id`).
 - `IDX_generation_user_id` na tabeli Generation (kolumna `user_id`).
@@ -109,10 +109,10 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 
 ## 4. Zasady RLS (Row-Level Security)
 
-- W tabelach zawierających kolumnę `user_id` (np. Diet, Preferences) zaleca się włączenie RLS, aby ograniczyć dostęp do danych na poziomie wiersza.
+- W tabelach zawierających kolumnę `user_id` (np. Diet, Profile) zaleca się włączenie RLS, aby ograniczyć dostęp do danych na poziomie wiersza.
 - Przykładowe polecenia:
   - ALTER TABLE Diet ENABLE ROW LEVEL SECURITY;
-  - ALTER TABLE Preferences ENABLE ROW LEVEL SECURITY;
+  - ALTER TABLE Profile ENABLE ROW LEVEL SECURITY;
 - Polityki RLS powinny porównywać wartość `user_id` z identyfikatorem aktualnie zalogowanego użytkownika.
 
 ## 5. Dodatkowe uwagi
