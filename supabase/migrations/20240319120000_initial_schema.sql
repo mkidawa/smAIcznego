@@ -41,7 +41,7 @@ create index idx_diet_user_id on diet(user_id);
 create table meal (
   id serial primary key,
   diet_id integer not null references diet(id) on delete cascade,
-  day integer not null check (day > 0),
+  day integer not null check (day >= 0),
   meal_type meal_type not null,
   instructions text,
   approx_calories integer

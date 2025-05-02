@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateDietCommand } from "../../../types";
-import { createDiet } from "@/api/services/dietService";
+import { DietService } from "@/lib/services/diet.service";
 
 export const prerender = false;
 
@@ -25,9 +25,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
     const data: CreateDietCommand = parsed.data;
 
-    const responsePayload = await createDiet(data, locals);
-
-    return responsePayload;
+    const dietService = new DietService(locals.supabase);
+    return await dietService.createDiet(data);
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "SERVER_ERROR", details: err instanceof Error ? err.message : String(err) }),

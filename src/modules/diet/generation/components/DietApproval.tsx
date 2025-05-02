@@ -1,5 +1,5 @@
 import React from "react";
-import type { DietPlanResponse } from "@/types/openRouter";
+import type { DietPlanResponse } from "@/modules/openRouter/openRouter.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ interface DietApprovalProps {
 
 const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }) => {
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-3xl mx-auto space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Przegląd Wygenerowanej Diety</CardTitle>
@@ -21,10 +21,10 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }
         <CardContent>
           <Tabs defaultValue="plan" className="w-full">
             <TabsList className="w-full">
-              <TabsTrigger value="plan" className="flex-1">
+              <TabsTrigger value="plan" className="flex-1 cursor-pointer">
                 Plan Diety
               </TabsTrigger>
-              <TabsTrigger value="shopping" className="flex-1">
+              <TabsTrigger value="shopping" className="flex-1 cursor-pointer">
                 Lista Zakupów
               </TabsTrigger>
             </TabsList>
@@ -38,14 +38,14 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {day.meals.map((meal) => (
+                        {day.meals?.map((meal) => (
                           <div key={meal.meal_number_in_day} className="border-l-2 border-primary pl-4">
                             <h4 className="font-medium">
                               {meal.name} ({meal.calories} kcal)
                             </h4>
                             <ul className="mt-2 text-sm text-muted-foreground">
                               {meal.ingredients.map((ingredient, idx) => (
-                                <li key={idx}>
+                                <li key={idx + meal.meal_number_in_day}>
                                   {ingredient.name} - {ingredient.quantity}
                                 </li>
                               ))}
@@ -81,10 +81,12 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }
       </Card>
 
       <div className="flex justify-end space-x-4">
-        <Button variant="outline" onClick={onReject}>
+        <Button variant="outline" onClick={onReject} className="cursor-pointer">
           Odrzuć
         </Button>
-        <Button onClick={onApprove}>Zatwierdź</Button>
+        <Button onClick={onApprove} className="cursor-pointer">
+          Zatwierdź
+        </Button>
       </div>
     </div>
   );

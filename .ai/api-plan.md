@@ -94,7 +94,7 @@ Response (HTTP 201):
 
 ```json
 {
-  "diet_id": 123,
+  "id": 123,
   "status": "draft", // becomes "ready" after steps 2 & 3
   "generation_id": 456
 }
@@ -284,7 +284,7 @@ Error cases similar to other endpoints (`GENERATION_NOT_FOUND`, 403 on RLS, etc.
 | --------------------- | --------------------------- | --------------------------------- |
 | Diet.number_of_days   | 1 – 14                      | 422 `NUMBER_OF_DAYS_OUT_OF_RANGE` |
 | Diet.calories_per_day | > 0                         | 422 `CALORIES_INVALID`            |
-| Meal.day              | > 0 & ≤ Diet.number_of_days | 422 `MEAL_DAY_INVALID`            |
+| Meal.day              | ≥ 0 & ≤ Diet.number_of_days | 422 `MEAL_DAY_INVALID`            |
 | Meal.meal_type        | Enum set                    | 422 `MEAL_TYPE_INVALID`           |
 | Profile.weight        | ≥ 0                         | 422 `WEIGHT_INVALID`              |
 

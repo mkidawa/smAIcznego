@@ -2,11 +2,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { CreateGenerationCommand } from "../../../types";
+import type { CreateGenerationCommand } from "../../../../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Controller } from "react-hook-form";
-import { Multiselect } from "../../../components/ui/multiselect";
+import { Multiselect } from "../../../../components/ui/multiselect";
 
 const optionsMap = [
   { value: "polish", label: "Polska" },

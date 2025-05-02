@@ -34,7 +34,7 @@ CREATE TYPE diet_status AS ENUM ('draft', 'meals_ready', 'ready');
 
 - `id` SERIAL PRIMARY KEY
 - `diet_id` INTEGER NOT NULL REFERENCES Diet(id) ON DELETE CASCADE
-- `day` INTEGER NOT NULL CHECK (day > 0) -- dzień diety
+- `day` INTEGER NOT NULL CHECK (day >= 0) -- dzień diety
 - `meal_type` VARCHAR(50) NOT NULL CHECK (meal_type IN ('breakfast', 'second breakfast', 'lunch', 'afternoon snack', 'dinner'))
 - `instructions` TEXT
 - `approx_calories` INTEGER

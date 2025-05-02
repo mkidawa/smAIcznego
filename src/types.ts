@@ -1,5 +1,5 @@
-import type { Database } from "./api/db/database.types";
-import type { DietPlanResponse } from "./types/openRouter";
+import type { Database } from "./db/database.types";
+import type { DietPlanResponse } from "./modules/openRouter/openRouter.types";
 
 // Aliasy dla typów enum z bazy danych
 export type CuisineType = Database["public"]["Enums"]["cuisine_type"];
@@ -54,7 +54,7 @@ export interface CreateDietCommand {
  * DTO odpowiedzi przy tworzeniu diety.
  */
 export interface CreateDietResponse {
-  diet_id: number;
+  id: number;
   status: DietStatus; // 'draft', 'meals_ready', 'ready'
   generation_id: number;
 }
@@ -145,6 +145,7 @@ export interface CreateGenerationResponse {
  */
 export interface GenerationResponse extends Generation {
   preview?: DietPlanResponse;
+  source_text: CreateGenerationCommand;
 }
 
 // ======================= PRZEPIS =======================

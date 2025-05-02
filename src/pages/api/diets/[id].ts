@@ -1,4 +1,4 @@
-import { getDiet } from "@/api/services/dietService";
+import { DietService } from "@/lib/services/diet.service";
 import type { APIRoute } from "astro";
 
 export const prerender = false;
@@ -12,7 +12,8 @@ export const GET: APIRoute = async ({ params, locals }) => {
       });
     }
 
-    return await getDiet(dietId, locals);
+    const dietService = new DietService(locals.supabase);
+    return await dietService.getDiet(dietId);
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "SERVER_ERROR", details: err instanceof Error ? err.message : String(err) }),

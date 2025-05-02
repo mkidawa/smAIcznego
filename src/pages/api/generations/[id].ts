@@ -1,4 +1,4 @@
-import { getGeneration } from "@/api/services/generationService";
+import { GenerationService } from "@/lib/services/generation.service";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ params, locals }) => {
@@ -12,7 +12,8 @@ export const GET: APIRoute = async ({ params, locals }) => {
       );
     }
 
-    const generation = await getGeneration(parseInt(generationId), locals);
+    const generationService = new GenerationService(locals.supabase);
+    const generation = await generationService.getGeneration(parseInt(generationId));
 
     if (!generation) {
       return new Response(JSON.stringify({ error: "NOT_FOUND", details: "Nie znaleziono generacji o podanym ID" }), {

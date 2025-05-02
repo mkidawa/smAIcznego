@@ -103,6 +103,7 @@ export interface Meal {
   name: string;
   calories: number;
   ingredients: Ingredient[];
+  meal_type: "breakfast" | "second breakfast" | "lunch" | "afternoon snack" | "dinner";
 }
 
 export interface DayPlan {

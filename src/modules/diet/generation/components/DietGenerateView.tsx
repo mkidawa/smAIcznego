@@ -1,0 +1,81 @@
+import React, { useState } from "react";
+import DietForm from "./DietForm.tsx";
+import DietApproval from "./DietApproval.tsx";
+import ErrorAlert from "../../../../components/ErrorAlert.tsx";
+import { Progress } from "@/components/ui/progress";
+import useGenerateDiet from "../hooks/useGenerateDiet.ts";
+import type { CreateGenerationCommand, CreateMealCommand } from "../../../../types.ts";
+import { useCreateDiet } from "../../dietaryPlan/hooks/useCreateDiet.ts";
+import { useAddMealsInBulk } from "@/modules/meals/hooks/useAddMealsInBulk.ts";
+
+const DietGenerateView: React.FC = () => {
+  const [step, setStep] = useState<"form" | "approval">("form");
+  const {
+    generateDiet,
+    isLoading: isGenerating,
+    progress,
+    error,
+    generatedDiet,
+  } = useGenerateDiet(() => setStep("approval"));
+  const { createDiet, isLoading: isCreatingDiet } = useCreateDiet();
+
+  const { addMeals, isLoading: isAddingMeals } = useAddMealsInBulk();
+
+  const isLoading = isGenerating || isCreatingDiet || isAddingMeals;
+
+  const handleGenerateDiet = async (data: CreateGenerationCommand) => {
+    await generateDiet(data);
+  };
+
+  const handleApprove = async () => {
+    if (!generatedDiet || !generatedDiet.preview) return;
+
+    const { calories_per_day, number_of_days, preferred_cuisines } = generatedDiet.source_text;
+
+    const diet = await createDiet({
+      calories_per_day,
+      number_of_days,
+      preferred_cuisines,
+      generation_id: generatedDiet.id,
+    });
+
+    // Preview meals to bulk create
+    const meals: CreateMealCommand[] = generatedDiet.preview.diet_plan
+      .flatMap((day, index) =>
+        day.meals.map((meal) => ({
+          day: index,
+          meal_type: meal.meal_type,
+          approx_calories: meal.calories,
+          instructions: meal.ingredients
+            .map((ingredient) => {
+              return `${ingredient.name} ${ingredient.quantity}`;
+            })
+            .join("\n"),
+        }))
+      )
+      .flat();
+
+    await addMeals({
+      dietId: diet.id,
+      meals,
+    });
+  };
+
+  const handleReject = () => {
+    setStep("form");
+  };
+
+  return (
+    <div className="p-4 w-full max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-8">Generowanie Diety</h1>
+      {error && <ErrorAlert message={error} />}
+      {step === "form" && <DietForm onSubmit={handleGenerateDiet} isLoading={isLoading} />}
+      {isGenerating && <Progress value={progress} className="mt-4" />}
+      {!isGenerating && step === "approval" && generatedDiet?.preview && (
+        <DietApproval diet={generatedDiet.preview} onApprove={handleApprove} onReject={handleReject} />
+      )}
+    </div>
+  );
+};
+
+export default DietGenerateView;

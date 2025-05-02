@@ -1,8 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import DietGenerateView from "../../modules/diet/generation/DietGenerateView";
+import DietGenerateView from "../../modules/diet/generation/components/DietGenerateView";
+import { Toaster } from "@/components/ui/sonner";
 ---
 
 <Layout>
   <DietGenerateView client:load />
+  <Toaster client:load />
 </Layout>

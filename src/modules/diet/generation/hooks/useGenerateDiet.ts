@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { CreateGenerationCommand, CreateGenerationResponse, GenerationResponse } from "../../../types";
-import type { DietPlanResponse } from "@/types/openRouter";
+import type { CreateGenerationCommand, CreateGenerationResponse, GenerationResponse } from "../../../../types";
 
 const POLLING_INTERVAL = 2000; // 2 sekundy między zapytaniami
 const MAX_POLLING_TIME = 300000; // 5 minut maksymalnego czasu pollingu
@@ -11,7 +10,36 @@ const useGenerateDiet = (onSuccess: () => void) => {
   const [error, setError] = useState("");
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
   const startTime = useRef<number | null>(null);
-  const [generatedDiet, setGeneratedDiet] = useState<DietPlanResponse | null>(null);
+  const [generatedDiet, setGeneratedDiet] = useState<GenerationResponse | null>(null);
+  const [generationId, setGenerationId] = useState<number | null>(null);
+
+  const updateUrl = useCallback((id: number | null) => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    if (id) {
+      url.searchParams.set("generationId", id.toString());
+    } else {
+      url.searchParams.delete("generationId");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  // Inicjalizacja generationId z URL po zamontowaniu komponentu
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("generationId");
+    if (id) {
+      const parsedId = parseInt(id, 10);
+      setGenerationId(parsedId);
+      setIsLoading(true);
+      startTime.current = Date.now();
+      checkGenerationStatus(parsedId);
+      pollingInterval.current = setInterval(() => checkGenerationStatus(parsedId), POLLING_INTERVAL);
+    }
+  }, []);
 
   const stopPolling = useCallback(() => {
     if (pollingInterval.current) {
@@ -21,9 +49,9 @@ const useGenerateDiet = (onSuccess: () => void) => {
     startTime.current = null;
   }, []);
 
-  const checkGenerationStatus = async (generationId: number): Promise<void> => {
+  const checkGenerationStatus = async (id: number): Promise<void> => {
     try {
-      const response = await fetch(`/api/generations/${generationId}`);
+      const response = await fetch(`/api/generations/${id}`);
       if (!response.ok) {
         stopPolling();
         setError("Błąd podczas sprawdzania statusu generacji");
@@ -33,15 +61,13 @@ const useGenerateDiet = (onSuccess: () => void) => {
 
       const generation: GenerationResponse = await response.json();
 
-      // Aktualizacja progresu (przykładowa implementacja)
       if (generation.status === "completed" && generation.preview) {
         setProgress(100);
         stopPolling();
         setIsLoading(false);
-        setGeneratedDiet(generation.preview);
+        setGeneratedDiet(generation);
         onSuccess();
       } else {
-        // Sprawdzenie czy nie przekroczyliśmy maksymalnego czasu
         if (startTime.current && Date.now() - startTime.current > MAX_POLLING_TIME) {
           stopPolling();
           setError("Przekroczono maksymalny czas generacji");
@@ -49,12 +75,12 @@ const useGenerateDiet = (onSuccess: () => void) => {
           return;
         }
 
-        // Przykładowa kalkulacja progresu
         const elapsedTime = Date.now() - (startTime.current || Date.now());
         const estimatedProgress = Math.min(90, (elapsedTime / MAX_POLLING_TIME) * 100);
         setProgress(Math.round(estimatedProgress));
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Błąd podczas sprawdzania statusu:", error);
       stopPolling();
       setError("Błąd podczas sprawdzania statusu generacji");
       setIsLoading(false);
@@ -81,13 +107,15 @@ const useGenerateDiet = (onSuccess: () => void) => {
       }
 
       const generation: CreateGenerationResponse = await response.json();
+      setGenerationId(generation.generation_id);
+      updateUrl(generation.generation_id);
 
-      // Rozpoczęcie pollingu
       startTime.current = Date.now();
       pollingInterval.current = setInterval(() => checkGenerationStatus(generation.generation_id), POLLING_INTERVAL);
 
       return generation;
-    } catch (err) {
+    } catch (error) {
+      console.error("Błąd podczas generowania:", error);
       setError("Błąd sieciowy");
       return null;
     }
@@ -98,7 +126,7 @@ const useGenerateDiet = (onSuccess: () => void) => {
     return () => stopPolling();
   }, [stopPolling]);
 
-  return { generateDiet, isLoading, progress, error, generatedDiet };
+  return { generateDiet, isLoading, progress, error, generatedDiet, generationId };
 };
 
 export default useGenerateDiet;

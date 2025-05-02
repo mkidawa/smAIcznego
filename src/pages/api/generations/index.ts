@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateGenerationCommand } from "../../../types";
-import { createGeneration } from "@/api/services/generationService";
+import { GenerationService } from "@/lib/services/generation.service";
 
 export const prerender = false;
 
@@ -27,7 +27,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
     const data: CreateGenerationCommand = parsed.data;
 
-    const responsePayload = await createGeneration(data, locals);
+    const generationService = new GenerationService(locals.supabase);
+    const responsePayload = await generationService.createGeneration(data);
 
     return new Response(JSON.stringify(responsePayload), { status: 202 });
   } catch (err) {
