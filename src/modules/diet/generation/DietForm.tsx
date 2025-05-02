@@ -56,7 +56,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
   const formsMethods = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      number_of_days: 7,
+      number_of_days: 3,
       calories_per_day: 2200,
       meals_per_day: 3,
       preferred_cuisines: [],

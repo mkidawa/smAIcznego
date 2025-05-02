@@ -64,3 +64,32 @@ export const createDiet = async (data: CreateDietCommand, locals: App.Locals) =>
 
   return new Response(JSON.stringify(responsePayload), { status: 201 });
 };
+
+export const getDiet = async (dietId: number, locals: App.Locals) => {
+  const { data: diet, error } = await locals.supabase
+    .from("diet")
+    .select(
+      `
+      *,
+      meals (
+        *,
+        recipe (*)
+      )
+    `
+    )
+    .eq("id", dietId)
+    .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+    .single();
+
+  if (error || !diet) {
+    return new Response(
+      JSON.stringify({
+        error: "DIET_NOT_FOUND",
+        details: error ? error.message : "Nie znaleziono diety",
+      }),
+      { status: 404 }
+    );
+  }
+
+  return new Response(JSON.stringify(diet), { status: 200 });
+};

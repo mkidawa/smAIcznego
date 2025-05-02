@@ -1,4 +1,5 @@
 import type { Database } from "./api/db/database.types";
+import type { DietPlanResponse } from "./types/openRouter";
 
 // Aliasy dla typów enum z bazy danych
 export type CuisineType = Database["public"]["Enums"]["cuisine_type"];
@@ -111,6 +112,15 @@ export interface CreateShoppingListResponse {
 
 // ======================= GENERACJA =======================
 /**
+ * Model danych generacji.
+ */
+export interface Generation {
+  id: number;
+  status: GenerationStatus;
+  created_at: string;
+}
+
+/**
  * DTO dla tworzenia rekordu generacji.
  * Zawiera parametry potrzebne do wywołania AI,
  * mapując je na odpowiednie encje (model 'generation').
@@ -133,11 +143,8 @@ export interface CreateGenerationResponse {
 /**
  * DTO odpowiedzi przy pobieraniu stanu generacji.
  */
-export interface GenerationResponse {
-  generation_id: number;
-  status: GenerationStatus;
-  preview?: CreateDietResponse; // Przykładowy podgląd diety oparty na CreateDietResponse
-  created_at: string;
+export interface GenerationResponse extends Generation {
+  preview?: DietPlanResponse;
 }
 
 // ======================= PRZEPIS =======================

@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { CreateDietCommand } from "../../types";
+import type { CreateDietCommand } from "../../../types";
 import { createDiet } from "@/api/services/dietService";
 
 export const prerender = false;
