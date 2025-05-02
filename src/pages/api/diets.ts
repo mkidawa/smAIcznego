@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const responsePayload = await createDiet(data, locals);
 
-    return new Response(JSON.stringify(responsePayload), { status: 201 });
+    return responsePayload;
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "SERVER_ERROR", details: err instanceof Error ? err.message : String(err) }),

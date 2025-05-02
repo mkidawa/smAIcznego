@@ -1,21 +1,11 @@
 import type { CreateDietCommand, CreateDietResponse } from "@/types";
 
 export const createDiet = async (data: CreateDietCommand, locals: App.Locals) => {
-  // Sprawdzenie autoryzacji
-  const session = await locals.supabase.auth.getSession();
-
-  if (!session.data.session) {
-    return new Response(JSON.stringify({ error: "UNAUTHORIZED" }), { status: 401 });
-  }
-
-  const user = session.data.session.user;
-
-  // Weryfikacja istnienia rekordu generacji, który należy do użytkownika
   const { data: generationData, error: generationError } = await locals.supabase
     .from("generation")
     .select("*")
     .eq("id", data.generation_id)
-    .eq("user_id", user.id)
+    .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
     .single();
   if (generationError || !generationData) {
     return new Response(
@@ -49,7 +39,7 @@ export const createDiet = async (data: CreateDietCommand, locals: App.Locals) =>
       preferred_cuisines: data.preferred_cuisines,
       generation_id: data.generation_id,
       status: "draft",
-      user_id: user.id,
+      user_id: "3a405225-034c-4eb8-80d0-1cd2b79327a6",
       end_date: endDate.toISOString(),
       created_at: now.toISOString(),
     })
@@ -72,5 +62,5 @@ export const createDiet = async (data: CreateDietCommand, locals: App.Locals) =>
     generation_id: insertedDiet.generation_id,
   };
 
-  return responsePayload;
+  return new Response(JSON.stringify(responsePayload), { status: 201 });
 };
