@@ -18,7 +18,9 @@ const { title = "smAIcznego" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <main class="flex flex-col items-center justify-center h-screen">
+      <slot />
+    </main>
   </body>
 </html>
 

@@ -1,4 +1,4 @@
-import type { Database } from "./db/database.types";
+import type { Database } from "./api/db/database.types";
 
 // Aliasy dla typów enum z bazy danych
 export type CuisineType = Database["public"]["Enums"]["cuisine_type"];

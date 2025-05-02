@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { CreateGenerationCommand, CreateGenerationResponse } from "../../types";
+import type { CreateGenerationCommand, CreateGenerationResponse } from "../../../types";
 
 const useGenerateDiet = () => {
   const [isLoading, setIsLoading] = useState(false);

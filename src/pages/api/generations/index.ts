@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { CreateGenerationCommand } from "../../../types";
-import { createGeneration } from "@/lib/api/generationService";
+import { createGeneration } from "@/api/services/generationService";
 
 export const prerender = false;
 

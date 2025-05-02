@@ -1,9 +1,9 @@
 import React from "react";
 import DietForm from "./DietForm.tsx";
-import ErrorAlert from "./ErrorAlert";
+import ErrorAlert from "../../../components/ErrorAlert.tsx";
 import { Progress } from "@/components/ui/progress";
-import useGenerateDiet from "./hooks/useGenerateDiet";
-import type { CreateGenerationCommand } from "../types";
+import useGenerateDiet from "../hooks/useGenerateDiet.ts";
+import type { CreateGenerationCommand } from "../../../types.ts";
 
 const DietGenerateView: React.FC = () => {
   const { generateDiet, isLoading, progress, error } = useGenerateDiet();
@@ -13,7 +13,7 @@ const DietGenerateView: React.FC = () => {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
+    <div className="p-4 w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Generowanie Diety</h1>
       {error && <ErrorAlert message={error} />}
       <DietForm onSubmit={handleGenerateDiet} isLoading={isLoading} />
