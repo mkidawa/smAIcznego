@@ -29,7 +29,7 @@ export class ShoppingListService {
         .from("diet")
         .select("*")
         .eq("id", dietId)
-        .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+        .eq("user_id", import.meta.env.MOCK_USER_ID)
         .single();
 
       if (dietError || !diet) {
@@ -116,7 +116,7 @@ export class ShoppingListService {
         .from("diet")
         .select("*")
         .eq("id", dietId)
-        .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+        .eq("user_id", import.meta.env.MOCK_USER_ID)
         .single();
 
       if (dietError || !diet) {

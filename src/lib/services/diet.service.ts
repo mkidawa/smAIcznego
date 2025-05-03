@@ -15,7 +15,7 @@ export class DietService {
       .from("generation")
       .select("*")
       .eq("id", data.generation_id)
-      .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+      .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
     if (generationError || !generationData) {
       this.logger.warn("Generation not found", { generationId: data.generation_id, error: generationError });
@@ -33,6 +33,7 @@ export class DietService {
       .from("diet")
       .select("*")
       .eq("generation_id", data.generation_id)
+      .eq("user_id", import.meta.env.MOCK_USER_ID)
       .maybeSingle();
     if (existingDiet) {
       this.logger.warn("Diet already exists", { generationId: data.generation_id });
@@ -51,7 +52,7 @@ export class DietService {
         preferred_cuisines: data.preferred_cuisines,
         generation_id: data.generation_id,
         status: "draft",
-        user_id: "3a405225-034c-4eb8-80d0-1cd2b79327a6",
+        user_id: import.meta.env.MOCK_USER_ID,
         end_date: endDate.toISOString(),
         created_at: now.toISOString(),
       })
@@ -90,7 +91,7 @@ export class DietService {
       `
       )
       .eq("id", dietId)
-      .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+      .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
 
     if (error || !diet) {
@@ -119,7 +120,7 @@ export class DietService {
       `
       )
       .eq("generation_id", generationId)
-      .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+      .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
 
     if (error || !diet) {

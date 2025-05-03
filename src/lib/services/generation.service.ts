@@ -18,7 +18,7 @@ export class GenerationService {
     const { data: generation, error: genError } = await this.supabase
       .from("generation")
       .insert({
-        user_id: "3a405225-034c-4eb8-80d0-1cd2b79327a6",
+        user_id: import.meta.env.MOCK_USER_ID,
         source_text: JSON.stringify(data),
         status: "pending",
         created_at: now.toISOString(),
