@@ -9,11 +9,28 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Błąd podczas wylogowywania");
+      }
+
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Błąd wylogowania:", error);
+    }
+  };
+
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center px-4 container mx-auto">
+      <div className="flex h-16 items-center px-4 container mx-auto justify-between">
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
@@ -36,6 +53,13 @@ const Navbar = () => {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          className="text-red-500 hover:text-red-700 hover:bg-red-100 cursor-pointer"
+        >
+          Wyloguj
+        </Button>
       </div>
     </div>
   );

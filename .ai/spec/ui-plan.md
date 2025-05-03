@@ -28,7 +28,7 @@ Wszystkie ścieżki aplikacji (poza `/login` i `/register`) są chronione przez 
 
 - **Ekran Edycji Profilu**
 
-  - Ścieżka widoku: `/profile/edit`
+  - Ścieżka widoku: `/profile`
   - Główny cel: Umożliwienie użytkownikowi uzupełnienia i edycji szczegółowych danych profilowych.
   - Kluczowe informacje do wyświetlenia: Formularz zawierający dane użytkownika, w tym wiek, wagę, alergie i wymagania zdrowotne.
   - Kluczowe komponenty: Input, Select, Button, formularz walidowany przez react hook form i Zod.

@@ -76,4 +76,18 @@ export class AuthService {
     this.logger.info("Password reset email sent successfully", { email });
     return true;
   }
+
+  async logout() {
+    this.logger.info("Attempting user logout");
+
+    const { error } = await this.supabase.auth.signOut();
+
+    if (error) {
+      this.logger.error("Logout failed", error);
+      throw new Error("Logout failed");
+    }
+
+    this.logger.info("User logged out successfully");
+    return true;
+  }
 }
