@@ -1,5 +1,5 @@
 import type { Database } from "@/db/database.types";
-import type { DietStatus } from "@/types";
+import type { DietStatus, MealType } from "@/types";
 
 export interface Diet {
   id: number;
@@ -10,4 +10,17 @@ export interface Diet {
   generation_id: number;
   end_date: string;
   created_at: string;
+}
+
+export interface MealItem {
+  id: number;
+  day: number;
+  meal_type: MealType;
+  approx_calories?: number;
+  instructions?: string;
+}
+
+export interface DietDetailViewModel extends Diet {
+  meals: MealItem[];
+  shoppingList: string[];
 }

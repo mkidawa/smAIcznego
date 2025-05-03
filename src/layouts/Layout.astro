@@ -1,34 +1,33 @@
 ---
 import "../styles/global.css";
-
-interface Props {
-  title?: string;
-}
-
-const { title = "smAIcznego" } = Astro.props;
+import { ViewTransitions } from "astro:transitions";
+import Navbar from "../components/Navbar";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="UTF-8" />
+    <meta name="description" content="smAIcznego - Twój asystent w planowaniu diety" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/png" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <title>smAIcznego</title>
+    <ViewTransitions />
   </head>
   <body>
-    <main class="flex flex-col items-center justify-center h-screen">
+    <Navbar client:load />
+    <main class="flex flex-col items-center justify-center h-[calc(100vh-65px)]">
       <slot />
     </main>
   </body>
 </html>
 
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+<style is:global>
+  :root {
+    --accent: 136, 58, 234;
+    --accent-light: 224, 204, 250;
+    --accent-dark: 49, 10, 101;
+    --accent-gradient: linear-gradient(45deg, rgb(var(--accent)), rgb(var(--accent-light)) 30%, white 60%);
   }
 </style>
