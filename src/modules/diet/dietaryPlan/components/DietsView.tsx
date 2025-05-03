@@ -75,7 +75,7 @@ const LoadingState = () => (
 );
 
 const EmptyState = () => (
-  <Card className="text-center py-12">
+  <Card className="text-center py-12 max-w-sm mx-auto">
     <CardHeader>
       <CardTitle>Brak Diet</CardTitle>
       <CardDescription>
@@ -83,7 +83,9 @@ const EmptyState = () => (
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <Button onClick={() => navigate("/diets/generate")}>Wygeneruj Pierwszą Dietę</Button>
+      <Button className="cursor-pointer" onClick={() => navigate("/diets/generate")}>
+        Wygeneruj Pierwszą Dietę
+      </Button>
     </CardContent>
   </Card>
 );
