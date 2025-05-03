@@ -28,14 +28,11 @@ export type UpdateProfileCommand = Partial<CreateProfileCommand>;
  * DTO odpowiedzi zwracanej przez endpoint profilu.
  */
 export interface ProfileResponse {
-  id: string; // identyfikator użytkownika (Supabase user id)
-  age: number;
-  gender: "male" | "female" | "other";
-  weight: number;
+  age: number | null;
+  gender: string | null;
+  weight: number | null;
   allergies: string[];
   terms_accepted: boolean;
-  created_at: string;
-  updated_at?: string;
 }
 
 // ======================= DIETA =======================
