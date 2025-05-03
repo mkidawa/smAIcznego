@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
 import { z } from "zod";
-import { NotFoundError, ConflictError, ServerError } from "../errors/api-error";
+import { NotFoundError, ConflictError, ServerError, UnauthorizedError } from "../errors/api-error";
 
 export const createDietSchema = z.object({
   number_of_days: z.number().int().min(1).max(14),
@@ -24,17 +24,33 @@ export type PaginationInput = z.infer<typeof paginationSchema>;
 
 export class DietService {
   private readonly logger = Logger.getInstance();
+  private userId: string | undefined;
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
+  private async initializeUserId() {
+    if (!this.userId) {
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
+      if (error || !user) {
+        throw new UnauthorizedError("Unauthorized access");
+      }
+      this.userId = user.id;
+    }
+    return this.userId;
+  }
+
   async createDiet(data: CreateDietInput) {
+    const userId = await this.initializeUserId();
     this.logger.info("Starting diet creation", { generationId: data.generation_id });
 
     const { data: generationData, error: generationError } = await this.supabase
       .from("generation")
       .select("*")
       .eq("id", data.generation_id)
-      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .eq("user_id", userId)
       .single();
 
     if (generationError || !generationData) {
@@ -47,7 +63,7 @@ export class DietService {
       .from("diet")
       .select("*")
       .eq("generation_id", data.generation_id)
-      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (existingDiet) {
@@ -67,7 +83,7 @@ export class DietService {
         preferred_cuisines: data.preferred_cuisines,
         generation_id: data.generation_id,
         status: "draft",
-        user_id: import.meta.env.MOCK_USER_ID,
+        user_id: userId,
         end_date: endDate.toISOString(),
         created_at: now.toISOString(),
       })
@@ -91,13 +107,14 @@ export class DietService {
   }
 
   async getDiet(dietId: number) {
+    const userId = await this.initializeUserId();
     this.logger.info("Starting diet retrieval", { dietId });
 
     const { data: diet, error } = await this.supabase
       .from("diet")
       .select("*")
       .eq("id", dietId)
-      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .eq("user_id", userId)
       .single();
 
     if (error || !diet) {
@@ -110,13 +127,14 @@ export class DietService {
   }
 
   async getDietByGenerationId(generationId: number) {
+    const userId = await this.initializeUserId();
     this.logger.info("Starting diet retrieval by generation ID", { generationId });
 
     const { data: diet, error } = await this.supabase
       .from("diet")
       .select("*")
       .eq("generation_id", generationId)
-      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .eq("user_id", userId)
       .single();
 
     if (error || !diet) {
@@ -129,7 +147,8 @@ export class DietService {
   }
 
   async getDiets({ page, per_page }: PaginationInput) {
-    this.logger.info("Starting diets retrieval", { page, per_page });
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting diets retrieval", { page, per_page, userId });
 
     // Calculate offset for pagination
     const offset = (page - 1) * per_page;
@@ -138,7 +157,7 @@ export class DietService {
     const { count, error: countError } = await this.supabase
       .from("diet")
       .select("*", { count: "exact", head: true })
-      .eq("user_id", import.meta.env.MOCK_USER_ID);
+      .eq("user_id", userId);
 
     if (countError) {
       this.logger.error("Failed to get total count of diets", countError);
@@ -149,7 +168,7 @@ export class DietService {
     const { data: diets, error: dietsError } = await this.supabase
       .from("diet")
       .select("*")
-      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .range(offset, offset + per_page - 1);
 
@@ -165,7 +184,7 @@ export class DietService {
       total: count || 0,
     };
 
-    this.logger.info("Diets retrieved successfully", { page, per_page, total: count });
+    this.logger.info("Diets retrieved successfully", { page, per_page, total: count, userId });
     return new Response(JSON.stringify(response), { status: 200 });
   }
 }

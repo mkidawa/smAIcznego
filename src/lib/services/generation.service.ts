@@ -4,22 +4,38 @@ import type { DietPlanResponse, OpenRouterResponse } from "@/modules/openRouter/
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
-import { NotFoundError, ServerError } from "../errors/api-error";
+import { NotFoundError, ServerError, UnauthorizedError } from "../errors/api-error";
 
 export class GenerationService {
   private readonly logger = Logger.getInstance();
+  private userId: string | undefined;
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
+  private async initializeUserId() {
+    if (!this.userId) {
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
+      if (error || !user) {
+        throw new UnauthorizedError("Unauthorized access");
+      }
+      this.userId = user.id;
+    }
+    return this.userId;
+  }
+
   async createGeneration(data: CreateGenerationCommand): Promise<CreateGenerationResponse> {
-    this.logger.info("Starting generation creation");
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting generation creation", { userId });
 
     // Insert record into generation table
     const now = new Date();
     const { data: generation, error: genError } = await this.supabase
       .from("generation")
       .insert({
-        user_id: import.meta.env.MOCK_USER_ID,
+        user_id: userId,
         source_text: JSON.stringify(data),
         status: "pending",
         created_at: now.toISOString(),
@@ -28,7 +44,7 @@ export class GenerationService {
       .single();
 
     if (genError || !generation) {
-      this.logger.error("Failed to create generation record", genError);
+      this.logger.error("Failed to create generation record", genError, { userId });
       throw new ServerError("Failed to create generation record", genError);
     }
 
@@ -124,17 +140,23 @@ export class GenerationService {
   }
 
   async getGeneration(id: number): Promise<GenerationResponse> {
-    this.logger.info("Starting generation retrieval", { generationId: id });
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting generation retrieval", { generationId: id, userId });
 
-    const { data: generation, error } = await this.supabase.from("generation").select("*").eq("id", id).single();
+    const { data: generation, error } = await this.supabase
+      .from("generation")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", userId)
+      .single();
 
     if (error) {
-      this.logger.error("Failed to retrieve generation", error, { generationId: id });
+      this.logger.error("Failed to retrieve generation", error, { generationId: id, userId });
       throw new ServerError("Failed to retrieve generation", error);
     }
 
     if (!generation) {
-      this.logger.warn("Generation not found", { generationId: id });
+      this.logger.warn("Generation not found", { generationId: id, userId });
       throw new NotFoundError("Generation not found");
     }
 
@@ -149,6 +171,7 @@ export class GenerationService {
 
     this.logger.info("Generation retrieved successfully", {
       generationId: id,
+      userId,
       status: generation.status,
       hasPreview: !!preview,
     });

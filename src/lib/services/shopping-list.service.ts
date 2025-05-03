@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
 import { z } from "zod";
-import { ValidationError } from "../errors/api-error";
+import { ValidationError, UnauthorizedError } from "../errors/api-error";
 
 const createShoppingListSchema = z.object({
   items: z
@@ -24,8 +24,23 @@ export type CreateShoppingListSchema = typeof createShoppingListSchema;
 
 export class ShoppingListService {
   private readonly logger = Logger.getInstance();
+  private userId: string | undefined;
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
+
+  private async initializeUserId() {
+    if (!this.userId) {
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
+      if (error || !user) {
+        throw new UnauthorizedError("Unauthorized access");
+      }
+      this.userId = user.id;
+    }
+    return this.userId;
+  }
 
   async createShoppingList(dietId: number, data: unknown) {
     if (!dietId || isNaN(dietId)) {
@@ -37,7 +52,8 @@ export class ShoppingListService {
       throw new ValidationError("Invalid shopping list data", validationResult.error.errors);
     }
 
-    this.logger.info("Starting shopping list creation", { dietId });
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting shopping list creation", { dietId, userId });
 
     try {
       // Check if diet exists
@@ -45,11 +61,11 @@ export class ShoppingListService {
         .from("diet")
         .select("*")
         .eq("id", dietId)
-        .eq("user_id", import.meta.env.MOCK_USER_ID)
+        .eq("user_id", userId)
         .single();
 
       if (dietError || !diet) {
-        this.logger.warn("Diet not found", { dietId, error: dietError });
+        this.logger.warn("Diet not found", { dietId, userId, error: dietError });
         return new Response(
           JSON.stringify({
             error: "DIET_NOT_FOUND",
@@ -112,7 +128,7 @@ export class ShoppingListService {
       this.logger.info("Shopping list created successfully", { dietId, shoppingListId: insertedList.id });
       return new Response(JSON.stringify(responsePayload), { status: 201 });
     } catch (error) {
-      this.logger.error("Error while creating shopping list", error as Error, { dietId });
+      this.logger.error("Error while creating shopping list", error as Error, { dietId, userId });
       return new Response(
         JSON.stringify({
           error: "SERVER_ERROR",
@@ -128,7 +144,8 @@ export class ShoppingListService {
       throw new ValidationError("Invalid diet ID");
     }
 
-    this.logger.info("Starting shopping list retrieval", { dietId });
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting shopping list retrieval", { dietId, userId });
 
     try {
       // Check if diet exists
@@ -136,11 +153,11 @@ export class ShoppingListService {
         .from("diet")
         .select("*")
         .eq("id", dietId)
-        .eq("user_id", import.meta.env.MOCK_USER_ID)
+        .eq("user_id", userId)
         .single();
 
       if (dietError || !diet) {
-        this.logger.warn("Diet not found", { dietId, error: dietError });
+        this.logger.warn("Diet not found", { dietId, userId, error: dietError });
         return new Response(
           JSON.stringify({
             error: "DIET_NOT_FOUND",
@@ -171,7 +188,7 @@ export class ShoppingListService {
       this.logger.info("Shopping list retrieved successfully", { dietId });
       return new Response(JSON.stringify(shoppingList), { status: 200 });
     } catch (error) {
-      this.logger.error("Error while retrieving shopping list", error as Error, { dietId });
+      this.logger.error("Error while retrieving shopping list", error as Error, { dietId, userId });
       return new Response(
         JSON.stringify({
           error: "SERVER_ERROR",

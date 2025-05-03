@@ -3,7 +3,7 @@ import type { Database } from "../../db/database.types";
 import type { CreateMealCommand, DietStatus, MealType, BulkCreateMealsCommand } from "../../types";
 import { Logger } from "../logger";
 import { z } from "zod";
-import { ValidationError, NotFoundError, ServerError } from "../errors/api-error";
+import { ValidationError, NotFoundError, ServerError, UnauthorizedError } from "../errors/api-error";
 
 // Schema for a single meal
 const mealSchema = z.object({
@@ -20,8 +20,23 @@ const bulkCreateMealsSchema = z.object({
 
 export class MealService {
   private readonly logger = Logger.getInstance();
+  private userId: string | undefined;
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
+
+  private async initializeUserId() {
+    if (!this.userId) {
+      const {
+        data: { user },
+        error,
+      } = await this.supabase.auth.getUser();
+      if (error || !user) {
+        throw new UnauthorizedError("Unauthorized access");
+      }
+      this.userId = user.id;
+    }
+    return this.userId;
+  }
 
   /**
    * Validates if diet exists and retrieves its length
@@ -30,16 +45,22 @@ export class MealService {
     exists: boolean;
     numberOfDays: number | null;
   }> {
-    this.logger.info("Validating diet existence", { dietId });
+    const userId = await this.initializeUserId();
+    this.logger.info("Validating diet existence", { dietId, userId });
 
-    const { data: diet, error } = await this.supabase.from("diet").select("number_of_days").eq("id", dietId).single();
+    const { data: diet, error } = await this.supabase
+      .from("diet")
+      .select("number_of_days")
+      .eq("id", dietId)
+      .eq("user_id", userId)
+      .single();
 
     if (error || !diet) {
-      this.logger.warn("Diet not found during validation", { dietId, error });
+      this.logger.warn("Diet not found during validation", { dietId, userId, error });
       return { exists: false, numberOfDays: null };
     }
 
-    this.logger.info("Diet validation successful", { dietId, numberOfDays: diet.number_of_days });
+    this.logger.info("Diet validation successful", { dietId, userId, numberOfDays: diet.number_of_days });
     return {
       exists: true,
       numberOfDays: diet.number_of_days,
