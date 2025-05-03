@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { CreateGenerationCommand } from "../../../types";
 import { GenerationService } from "@/lib/services/generation.service";
+import { errorHandler } from "@/middleware/error-handler";
 
 export const prerender = false;
 
@@ -14,27 +14,12 @@ const createGenerationSchema = z.object({
   ),
 });
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  try {
-    // Parsowanie i walidacja danych wejściowych
-    const body = await request.json();
+export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
+  const body = await request.json();
+  const data = createGenerationSchema.parse(body);
 
-    const parsed = createGenerationSchema.safeParse(body);
-    if (!parsed.success) {
-      return new Response(JSON.stringify({ error: "VALIDATION_FAILED", details: parsed.error.flatten() }), {
-        status: 400,
-      });
-    }
-    const data: CreateGenerationCommand = parsed.data;
+  const generationService = new GenerationService(locals.supabase);
+  const responsePayload = await generationService.createGeneration(data);
 
-    const generationService = new GenerationService(locals.supabase);
-    const responsePayload = await generationService.createGeneration(data);
-
-    return new Response(JSON.stringify(responsePayload), { status: 202 });
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ error: "SERVER_ERROR", details: err instanceof Error ? err.message : String(err) }),
-      { status: 500 }
-    );
-  }
-};
+  return new Response(JSON.stringify(responsePayload), { status: 202 });
+});

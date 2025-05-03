@@ -1,27 +1,43 @@
-import type { CreateShoppingListCommand, CreateShoppingListResponse } from "@/types";
+import type { CreateShoppingListResponse } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
+import { z } from "zod";
+import { ValidationError } from "../errors/api-error";
+
+const createShoppingListSchema = z.object({
+  items: z
+    .array(
+      z
+        .string({
+          required_error: "Each list item must be a text",
+          invalid_type_error: "Each list item must be a text",
+        })
+        .min(1, "List item cannot be empty")
+        .max(200, "List item cannot be longer than 200 characters")
+    )
+    .min(1, "Shopping list must contain at least one item")
+    .max(100, "Shopping list cannot contain more than 100 items"),
+});
+
+export type CreateShoppingListSchema = typeof createShoppingListSchema;
 
 export class ShoppingListService {
   private readonly logger = Logger.getInstance();
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-  async createShoppingList(dietId: number, data: CreateShoppingListCommand) {
-    this.logger.info("Starting shopping list creation", { dietId });
-
-    // Input data validation
-    if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
-      this.logger.warn("Invalid input data for shopping list", { dietId, data });
-      return new Response(
-        JSON.stringify({
-          error: "INVALID_INPUT",
-          details: "Shopping list must contain at least one item",
-        }),
-        { status: 400 }
-      );
+  async createShoppingList(dietId: number, data: unknown) {
+    if (!dietId || isNaN(dietId)) {
+      throw new ValidationError("Invalid diet ID");
     }
+
+    const validationResult = createShoppingListSchema.safeParse(data);
+    if (!validationResult.success) {
+      throw new ValidationError("Invalid shopping list data", validationResult.error.errors);
+    }
+
+    this.logger.info("Starting shopping list creation", { dietId });
 
     try {
       // Check if diet exists
@@ -66,7 +82,7 @@ export class ShoppingListService {
         .from("shopping_list")
         .insert({
           diet_id: dietId,
-          items: data.items,
+          items: validationResult.data.items,
           created_at: new Date().toISOString(),
         })
         .select("*")
@@ -108,6 +124,10 @@ export class ShoppingListService {
   }
 
   async getShoppingList(dietId: number) {
+    if (!dietId || isNaN(dietId)) {
+      throw new ValidationError("Invalid diet ID");
+    }
+
     this.logger.info("Starting shopping list retrieval", { dietId });
 
     try {

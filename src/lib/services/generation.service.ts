@@ -4,6 +4,7 @@ import type { DietPlanResponse, OpenRouterResponse } from "@/modules/openRouter/
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
+import { NotFoundError, ServerError } from "../errors/api-error";
 
 export class GenerationService {
   private readonly logger = Logger.getInstance();
@@ -28,7 +29,7 @@ export class GenerationService {
 
     if (genError || !generation) {
       this.logger.error("Failed to create generation record", genError);
-      throw new Error(genError ? genError.message : "Failed to create generation record");
+      throw new ServerError("Failed to create generation record", genError);
     }
 
     // Log event in generation_log table
@@ -41,7 +42,7 @@ export class GenerationService {
     const { error: logError } = await this.supabase.from("generation_log").insert(logPayload);
     if (logError) {
       this.logger.error("Failed to create generation log", logError, { generationId: generation.id });
-      throw new Error(logError.message);
+      throw new ServerError("Failed to create generation log", logError);
     }
 
     try {
@@ -113,6 +114,7 @@ export class GenerationService {
       });
 
       this.logger.error("OpenRouter initialization failed", error as Error, { generationId: generation.id });
+      throw new ServerError("Failed to initialize OpenRouter service", error);
     }
 
     return {
@@ -121,14 +123,19 @@ export class GenerationService {
     };
   }
 
-  async getGeneration(id: number): Promise<GenerationResponse | null> {
+  async getGeneration(id: number): Promise<GenerationResponse> {
     this.logger.info("Starting generation retrieval", { generationId: id });
 
     const { data: generation, error } = await this.supabase.from("generation").select("*").eq("id", id).single();
 
-    if (error || !generation) {
-      this.logger.warn("Generation not found", { generationId: id, error });
-      return null;
+    if (error) {
+      this.logger.error("Failed to retrieve generation", error, { generationId: id });
+      throw new ServerError("Failed to retrieve generation", error);
+    }
+
+    if (!generation) {
+      this.logger.warn("Generation not found", { generationId: id });
+      throw new NotFoundError("Generation not found");
     }
 
     let preview;

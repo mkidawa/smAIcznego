@@ -1,51 +1,16 @@
 import type { APIRoute } from "astro";
 import { AuthService, resetPasswordSchema } from "@/lib/services/auth.service";
-import { z } from "zod";
-export const POST: APIRoute = async ({ request, locals }) => {
-  try {
-    const body = await request.json();
-    const { email } = resetPasswordSchema.parse(body);
+import { errorHandler } from "@/middleware/error-handler";
+import { ValidationError } from "@/lib/errors/api-error";
 
-    const authService = new AuthService(locals.supabase);
-    await authService.resetPassword(email);
+export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
+  const rawData = await request.json();
+  const result = resetPasswordSchema.safeParse(rawData);
 
-    return new Response(
-      JSON.stringify({
-        message: "Password reset email sent",
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid email address",
-          details: error.errors,
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        error: "An error occurred during password reset",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  if (!result.success) {
+    throw new ValidationError("Invalid email address", result.error.errors);
   }
-};
+
+  const authService = new AuthService(locals.supabase);
+  return await authService.resetPassword(result.data);
+});

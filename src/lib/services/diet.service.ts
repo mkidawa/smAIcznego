@@ -1,14 +1,33 @@
-import type { CreateDietCommand, CreateDietResponse } from "@/types";
+import type { CreateDietResponse } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
+import { z } from "zod";
+import { NotFoundError, ConflictError, ServerError } from "../errors/api-error";
+
+export const createDietSchema = z.object({
+  number_of_days: z.number().int().min(1).max(14),
+  calories_per_day: z.number().positive(),
+  preferred_cuisines: z.array(
+    z.enum(["polish", "italian", "indian", "asian", "vegan", "vegetarian", "gluten-free", "keto", "paleo"])
+  ),
+  generation_id: z.number().positive(),
+});
+
+export const paginationSchema = z.object({
+  page: z.number().int().positive(),
+  per_page: z.number().int().min(1).max(50),
+});
+
+export type CreateDietInput = z.infer<typeof createDietSchema>;
+export type PaginationInput = z.infer<typeof paginationSchema>;
 
 export class DietService {
   private readonly logger = Logger.getInstance();
 
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
-  async createDiet(data: CreateDietCommand) {
+  async createDiet(data: CreateDietInput) {
     this.logger.info("Starting diet creation", { generationId: data.generation_id });
 
     const { data: generationData, error: generationError } = await this.supabase
@@ -17,15 +36,10 @@ export class DietService {
       .eq("id", data.generation_id)
       .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
+
     if (generationError || !generationData) {
       this.logger.warn("Generation not found", { generationId: data.generation_id, error: generationError });
-      return new Response(
-        JSON.stringify({
-          error: "GENERATION_NOT_FOUND",
-          details: generationError ? generationError.message : "Generation not found",
-        }),
-        { status: 404 }
-      );
+      throw new NotFoundError("Generation not found");
     }
 
     // Check if diet for this generation already exists
@@ -35,9 +49,10 @@ export class DietService {
       .eq("generation_id", data.generation_id)
       .eq("user_id", import.meta.env.MOCK_USER_ID)
       .maybeSingle();
+
     if (existingDiet) {
       this.logger.warn("Diet already exists", { generationId: data.generation_id });
-      return new Response(JSON.stringify({ error: "DIET_ALREADY_EXISTS" }), { status: 409 });
+      throw new ConflictError("Diet already exists for this generation");
     }
 
     const now = new Date();
@@ -58,15 +73,10 @@ export class DietService {
       })
       .select("*")
       .single();
+
     if (insertError || !insertedDiet) {
       this.logger.error("Failed to create diet", insertError, { generationId: data.generation_id });
-      return new Response(
-        JSON.stringify({
-          error: "SERVER_ERROR",
-          details: insertError ? insertError.message : "Error while creating diet",
-        }),
-        { status: 500 }
-      );
+      throw new ServerError("Failed to create diet", insertError?.message);
     }
 
     // Prepare and return response
@@ -85,24 +95,14 @@ export class DietService {
 
     const { data: diet, error } = await this.supabase
       .from("diet")
-      .select(
-        `
-        *
-      `
-      )
+      .select("*")
       .eq("id", dietId)
       .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
 
     if (error || !diet) {
       this.logger.warn("Diet not found", { dietId, error });
-      return new Response(
-        JSON.stringify({
-          error: "DIET_NOT_FOUND",
-          details: error ? error.message : "Diet not found",
-        }),
-        { status: 404 }
-      );
+      throw new NotFoundError("Diet not found");
     }
 
     this.logger.info("Diet retrieved successfully", { dietId });
@@ -114,31 +114,21 @@ export class DietService {
 
     const { data: diet, error } = await this.supabase
       .from("diet")
-      .select(
-        `
-        *
-      `
-      )
+      .select("*")
       .eq("generation_id", generationId)
       .eq("user_id", import.meta.env.MOCK_USER_ID)
       .single();
 
     if (error || !diet) {
       this.logger.warn("Diet not found for generation", { generationId, error });
-      return new Response(
-        JSON.stringify({
-          error: "DIET_NOT_FOUND",
-          details: error ? error.message : "Diet not found for this generation",
-        }),
-        { status: 404 }
-      );
+      throw new NotFoundError("Diet not found for this generation");
     }
 
     this.logger.info("Diet retrieved successfully by generation ID", { generationId });
     return new Response(JSON.stringify(diet), { status: 200 });
   }
 
-  async getDiets(page = 1, per_page = 10) {
+  async getDiets({ page, per_page }: PaginationInput) {
     this.logger.info("Starting diets retrieval", { page, per_page });
 
     // Calculate offset for pagination
@@ -152,13 +142,7 @@ export class DietService {
 
     if (countError) {
       this.logger.error("Failed to get total count of diets", countError);
-      return new Response(
-        JSON.stringify({
-          error: "SERVER_ERROR",
-          details: "Failed to get total count of diets",
-        }),
-        { status: 500 }
-      );
+      throw new ServerError("Failed to get total count of diets");
     }
 
     // Get paginated diets
@@ -171,13 +155,7 @@ export class DietService {
 
     if (dietsError) {
       this.logger.error("Failed to retrieve diets", dietsError);
-      return new Response(
-        JSON.stringify({
-          error: "SERVER_ERROR",
-          details: "Failed to retrieve diets",
-        }),
-        { status: 500 }
-      );
+      throw new ServerError("Failed to retrieve diets");
     }
 
     const response = {

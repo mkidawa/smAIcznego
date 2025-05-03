@@ -1,7 +1,22 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
-import type { CreateMealCommand, DietStatus, MealType } from "../../types";
+import type { CreateMealCommand, DietStatus, MealType, BulkCreateMealsCommand } from "../../types";
 import { Logger } from "../logger";
+import { z } from "zod";
+import { ValidationError, NotFoundError, ServerError } from "../errors/api-error";
+
+// Schema for a single meal
+const mealSchema = z.object({
+  day: z.number(),
+  meal_type: z.enum(["breakfast", "second breakfast", "lunch", "afternoon snack", "dinner"]),
+  instructions: z.string().optional(),
+  approx_calories: z.number().positive().optional(),
+}) satisfies z.ZodType<CreateMealCommand>;
+
+// Schema for the entire request
+const bulkCreateMealsSchema = z.object({
+  meals: z.array(mealSchema).min(1),
+}) satisfies z.ZodType<BulkCreateMealsCommand>;
 
 export class MealService {
   private readonly logger = Logger.getInstance();
@@ -165,5 +180,45 @@ export class MealService {
     });
 
     return meals;
+  }
+
+  async createMeals(dietId: number, data: unknown) {
+    if (isNaN(dietId)) {
+      throw new ValidationError("Invalid diet ID format");
+    }
+
+    const validationResult = bulkCreateMealsSchema.safeParse(data);
+    if (!validationResult.success) {
+      throw new ValidationError("Invalid request data", validationResult.error.errors);
+    }
+
+    const { meals } = validationResult.data;
+
+    // Check if diet exists and get number of days
+    const { exists, numberOfDays } = await this.validateDiet(dietId);
+    if (!exists) {
+      throw new NotFoundError("Diet not found");
+    }
+    if (numberOfDays === null) {
+      throw new ServerError("Invalid diet data");
+    }
+
+    // Validate days relative to diet length
+    const invalidDays = meals.filter((meal) => meal.day > numberOfDays);
+    if (invalidDays.length > 0) {
+      throw new ValidationError("Invalid meal days", `Meal days cannot exceed diet length (${numberOfDays} days)`);
+    }
+
+    // Check for meal uniqueness
+    const { hasConflicts, conflicts } = await this.validateMealUniqueness(dietId, meals);
+    if (hasConflicts) {
+      throw new ValidationError("Meal conflicts detected", {
+        message: "Cannot add multiple meals of the same type for the same day",
+        conflicts,
+      });
+    }
+
+    // Add meals and update diet status within a transaction
+    return await this.createMealsWithStatusUpdate(dietId, meals);
   }
 }

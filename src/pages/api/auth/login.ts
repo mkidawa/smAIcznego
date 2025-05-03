@@ -1,52 +1,16 @@
 import type { APIRoute } from "astro";
 import { AuthService, loginSchema } from "@/lib/services/auth.service";
-import { z } from "zod";
+import { errorHandler } from "@/middleware/error-handler";
+import { ValidationError } from "@/lib/errors/api-error";
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  try {
-    const body = await request.json();
-    const { email, password } = loginSchema.parse(body);
+export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
+  const rawData = await request.json();
+  const result = loginSchema.safeParse(rawData);
 
-    const authService = new AuthService(locals.supabase);
-    const data = await authService.login(email, password);
-
-    return new Response(
-      JSON.stringify({
-        user: data.user,
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid login data",
-          details: error.errors,
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        error: "An error occurred during login",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  if (!result.success) {
+    throw new ValidationError("Invalid login data", result.error.errors);
   }
-};
+
+  const authService = new AuthService(locals.supabase);
+  return await authService.login(result.data);
+});
