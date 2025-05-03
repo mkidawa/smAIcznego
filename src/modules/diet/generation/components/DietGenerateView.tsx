@@ -7,6 +7,7 @@ import useGenerateDiet from "../hooks/useGenerateDiet.ts";
 import type { CreateGenerationCommand, CreateMealCommand } from "../../../../types.ts";
 import { useCreateDiet } from "../../dietaryPlan/hooks/useCreateDiet.ts";
 import { useAddMealsInBulk } from "@/modules/meals/hooks/useAddMealsInBulk.ts";
+import { useCreateShoppingList } from "@/modules/shoppingList/hooks/useCreateShoppingList.ts";
 
 const DietGenerateView: React.FC = () => {
   const [step, setStep] = useState<"form" | "approval">("form");
@@ -18,10 +19,10 @@ const DietGenerateView: React.FC = () => {
     generatedDiet,
   } = useGenerateDiet(() => setStep("approval"));
   const { createDiet, isLoading: isCreatingDiet } = useCreateDiet();
-
   const { addMeals, isLoading: isAddingMeals } = useAddMealsInBulk();
+  const { createShoppingList, isLoading: isCreatingShoppingList } = useCreateShoppingList();
 
-  const isLoading = isGenerating || isCreatingDiet || isAddingMeals;
+  const isLoading = isGenerating || isCreatingDiet || isAddingMeals || isCreatingShoppingList;
 
   const handleGenerateDiet = async (data: CreateGenerationCommand) => {
     await generateDiet(data);
@@ -58,6 +59,10 @@ const DietGenerateView: React.FC = () => {
     await addMeals({
       dietId: diet.id,
       meals,
+    });
+
+    await createShoppingList(diet.id, {
+      items: generatedDiet.preview.shopping_list.map((ingredient) => `${ingredient.name} - ${ingredient.quantity}`),
     });
   };
 

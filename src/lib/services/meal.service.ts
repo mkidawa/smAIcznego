@@ -1,23 +1,30 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 import type { CreateMealCommand, DietStatus, MealType } from "../../types";
+import { Logger } from "../logger";
 
 export class MealService {
+  private readonly logger = Logger.getInstance();
+
   constructor(private readonly supabase: SupabaseClient<Database>) {}
 
   /**
-   * Sprawdza czy dieta istnieje i pobiera jej długość
+   * Validates if diet exists and retrieves its length
    */
   async validateDiet(dietId: number): Promise<{
     exists: boolean;
     numberOfDays: number | null;
   }> {
+    this.logger.info("Validating diet existence", { dietId });
+
     const { data: diet, error } = await this.supabase.from("diet").select("number_of_days").eq("id", dietId).single();
 
     if (error || !diet) {
+      this.logger.warn("Diet not found during validation", { dietId, error });
       return { exists: false, numberOfDays: null };
     }
 
+    this.logger.info("Diet validation successful", { dietId, numberOfDays: diet.number_of_days });
     return {
       exists: true,
       numberOfDays: diet.number_of_days,
@@ -25,7 +32,7 @@ export class MealService {
   }
 
   /**
-   * Sprawdza czy nie ma konfliktów między posiłkami (ten sam typ w tym samym dniu)
+   * Checks for conflicts between meals (same type on the same day)
    */
   async validateMealUniqueness(
     dietId: number,
@@ -34,10 +41,12 @@ export class MealService {
     hasConflicts: boolean;
     conflicts?: { day: number; meal_type: MealType }[];
   }> {
-    // Grupujemy nowe posiłki po dniu i typie
+    this.logger.info("Starting meal uniqueness validation", { dietId, mealsCount: meals.length });
+
+    // Group new meals by day and type
     const mealGroups = new Map<string, boolean>();
     const conflicts: { day: number; meal_type: MealType }[] = [];
-    // Sprawdzamy duplikaty w nowych posiłkach
+    // Check duplicates in new meals
     for (const meal of meals) {
       const key = `${meal.day}-${meal.meal_type}`;
       if (mealGroups.has(key)) {
@@ -46,13 +55,14 @@ export class MealService {
       mealGroups.set(key, true);
     }
 
-    // Sprawdzamy konflikty z istniejącymi posiłkami
+    // Check conflicts with existing meals
     const { data: existingMeals, error } = await this.supabase
       .from("meal")
       .select("day, meal_type")
       .eq("diet_id", dietId);
 
     if (error) {
+      this.logger.error("Failed to check meal uniqueness", error as Error, { dietId });
       throw new Error(`Failed to check meal uniqueness: ${error.message}`);
     }
 
@@ -63,17 +73,27 @@ export class MealService {
       }
     }
 
-    return {
+    const result = {
       hasConflicts: conflicts.length > 0,
       conflicts: conflicts.length > 0 ? conflicts : undefined,
     };
+
+    this.logger.info("Meal uniqueness validation completed", {
+      dietId,
+      hasConflicts: result.hasConflicts,
+      conflictsCount: conflicts.length,
+    });
+
+    return result;
   }
 
   /**
-   * Dodaje wiele posiłków do diety i aktualizuje jej status w ramach jednej transakcji
+   * Adds multiple meals to diet and updates its status in a single transaction
    */
   async createMealsWithStatusUpdate(dietId: number, meals: CreateMealCommand[]): Promise<number[]> {
-    // Dodajemy posiłki
+    this.logger.info("Starting meal creation with status update", { dietId, mealsCount: meals.length });
+
+    // Add meals
     const { data, error: insertError } = await this.supabase
       .from("meal")
       .insert(
@@ -85,18 +105,25 @@ export class MealService {
       .select("id");
 
     if (insertError) {
+      this.logger.error("Failed to create meals", insertError as Error, { dietId });
       throw new Error(`Failed to create meals: ${insertError.message}`);
     }
 
-    // Aktualizujemy status diety
+    // Update diet status
     const { error: updateError } = await this.supabase
       .from("diet")
       .update({ status: "meals_ready" as DietStatus })
       .eq("id", dietId);
 
     if (updateError) {
+      this.logger.error("Failed to update diet status", updateError as Error, { dietId });
       throw new Error(`Failed to update diet status: ${updateError.message}`);
     }
+
+    this.logger.info("Successfully created meals and updated diet status", {
+      dietId,
+      createdMealsCount: data.length,
+    });
 
     return data.map((meal: { id: number }) => meal.id);
   }

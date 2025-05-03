@@ -1,4 +1,5 @@
 import type { OpenRouterResponse, OpenRouterRequest } from "@/modules/openRouter/openRouter.types";
+import { Logger } from "../logger";
 
 const openRouterApiKey = import.meta.env.OPENROUTER_API_KEY;
 
@@ -7,9 +8,10 @@ export class OpenRouterService {
   private readonly _apiKey: string;
   private readonly _retryCount: number = 3;
   private readonly _retryDelay: number = 1000;
+  private readonly logger = Logger.getInstance();
 
   private readonly _defaultSystemMessage: string =
-    "Jesteś ekspertem od planowania diet. Twoim zadaniem jest tworzenie spersonalizowanych planów żywieniowych wraz z listami zakupów. MUSISZ odpowiadać WYŁĄCZNIE w formacie JSON, który zawiera obiekt z dwoma kluczami: 'diet_plan' i 'shopping_list'. Nie dodawaj żadnego tekstu przed ani po JSON. Format odpowiedzi musi być zgodny z podanym schematem. Zaczynaj numerowanie posiłków (meal_number_in_day) oraz dni (day) od 0.";
+    "You are a diet planning expert. Your task is to create personalized meal plans with shopping lists. You MUST respond ONLY in JSON format containing an object with two keys: 'diet_plan' and 'shopping_list'. Do not add any text before or after the JSON. The response format must match the provided schema. Start numbering meals (meal_number_in_day) and days (day) from 0.";
   private readonly _defaultModelName: string = "openai/gpt-4o-mini";
   private readonly _defaultModelParameters = {
     temperature: 0.7,
@@ -20,12 +22,12 @@ export class OpenRouterService {
     this._apiKey = openRouterApiKey;
     this._apiEndpoint = "https://openrouter.ai/api/v1";
 
-    // Inicjalizacja z parametrami lub wartościami domyślnymi
+    // Initialize with parameters or default values
     this.systemMessage = systemMessage ?? this._defaultSystemMessage;
     this.modelName = modelName ?? this._defaultModelName;
     this.modelParameters = modelParameters ?? this._defaultModelParameters;
 
-    // Walidacja konfiguracji
+    // Validate configuration
     if (!this._apiKey) {
       throw new Error("OPENROUTER_API_KEY is not set in environment variables");
     }
@@ -39,6 +41,7 @@ export class OpenRouterService {
   };
 
   public async initialize(): Promise<void> {
+    this.logger.info("Initializing OpenRouter service");
     try {
       const response = await fetch(this._apiEndpoint, {
         method: "HEAD",
@@ -50,8 +53,10 @@ export class OpenRouterService {
       if (!response.ok) {
         throw new Error(`Failed to initialize OpenRouter service: ${response.statusText}`);
       }
+
+      this.logger.info("OpenRouter service initialized successfully");
     } catch (error) {
-      this._logError(error as Error);
+      this.logger.error("Failed to initialize OpenRouter service", error as Error);
       throw new Error("Failed to initialize OpenRouter service");
     }
   }
@@ -64,11 +69,12 @@ export class OpenRouterService {
     allergies?: string[];
   }): Promise<OpenRouterResponse> {
     try {
+      this.logger.info("Starting diet plan generation", { params });
       const userMessage = this._buildDietPlanMessage(params);
       const payload = this._buildRequestPayload(userMessage);
       return await this._sendWithRetry(payload);
     } catch (error) {
-      this._logError(error as Error);
+      this.logger.error("Failed to generate diet plan", error as Error, { params });
       throw new Error("Failed to generate diet plan");
     }
   }
@@ -162,6 +168,7 @@ export class OpenRouterService {
 
   private async _sendWithRetry(payload: OpenRouterRequest, attempt = 1): Promise<OpenRouterResponse> {
     try {
+      this.logger.info("Sending request to OpenRouter API", { attempt });
       const response = await fetch(`${this._apiEndpoint}/chat/completions`, {
         method: "POST",
         headers: {
@@ -190,22 +197,17 @@ export class OpenRouterService {
         throw new Error("API returned empty response");
       }
 
+      this.logger.info("Successfully received response from OpenRouter API");
       return jsonResponse;
     } catch (error) {
       if (attempt < this._retryCount) {
+        this.logger.warn("Request failed, retrying", { attempt, error: error as Error });
         const delay = this._retryDelay * Math.pow(2, attempt - 1);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return this._sendWithRetry(payload, attempt + 1);
       }
+      this.logger.error("All retry attempts failed", error as Error, { maxAttempts: this._retryCount });
       throw error;
     }
-  }
-
-  private _logError(error: Error): void {
-    console.error("[OpenRouterService] Error:", {
-      message: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString(),
-    });
   }
 }

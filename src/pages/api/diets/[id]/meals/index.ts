@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { BulkCreateMealsCommand, CreateMealCommand } from "../../../../../types";
 import { MealService } from "../../../../../lib/services/meal.service";
 
-// Schema dla pojedynczego posiłku
+// Schema for a single meal
 const mealSchema = z.object({
   day: z.number(),
   meal_type: z.enum(["breakfast", "second breakfast", "lunch", "afternoon snack", "dinner"]),
@@ -11,7 +11,7 @@ const mealSchema = z.object({
   approx_calories: z.number().positive().optional(),
 }) satisfies z.ZodType<CreateMealCommand>;
 
-// Schema dla całego żądania
+// Schema for the entire request
 const bulkCreateMealsSchema = z.object({
   meals: z.array(mealSchema).min(1),
 }) satisfies z.ZodType<BulkCreateMealsCommand>;
@@ -26,7 +26,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       });
     }
 
-    // Parsowanie i walidacja danych wejściowych
+    // Parsing and validating input data
     const rawData = await request.json();
     const validationResult = bulkCreateMealsSchema.safeParse(rawData);
 
@@ -46,7 +46,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const { meals } = validationResult.data;
     const mealService = new MealService(locals.supabase);
 
-    // Sprawdzenie czy dieta istnieje
+    // Check if diet exists
     const { exists, numberOfDays } = await mealService.validateDiet(dietId);
 
     if (!exists) {
@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       });
     }
 
-    // Walidacja dni względem długości diety
+    // Validate days relative to diet length
     const invalidDays = meals.filter((meal) => meal.day > numberOfDays);
     if (invalidDays.length > 0) {
       return new Response(
@@ -78,7 +78,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       );
     }
 
-    // Sprawdzenie unikalności posiłków
+    // Check for meal uniqueness
     const { hasConflicts, conflicts } = await mealService.validateMealUniqueness(dietId, meals);
     if (hasConflicts) {
       return new Response(
@@ -94,7 +94,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       );
     }
 
-    // Dodanie posiłków i aktualizacja statusu diety w ramach transakcji
+    // Add meals and update diet status within a transaction
     const mealIds = await mealService.createMealsWithStatusUpdate(dietId, meals);
 
     return new Response(JSON.stringify({ meal_ids: mealIds }), {

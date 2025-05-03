@@ -7,7 +7,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
     if (!generationId || isNaN(parseInt(generationId))) {
       return new Response(
-        JSON.stringify({ error: "VALIDATION_FAILED", details: "Parametr 'id' jest wymagany i musi być liczbą" }),
+        JSON.stringify({ error: "VALIDATION_FAILED", details: "Parameter 'id' is required and must be a number" }),
         { status: 400 }
       );
     }
@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     const generation = await generationService.getGeneration(parseInt(generationId));
 
     if (!generation) {
-      return new Response(JSON.stringify({ error: "NOT_FOUND", details: "Nie znaleziono generacji o podanym ID" }), {
+      return new Response(JSON.stringify({ error: "NOT_FOUND", details: "Generation with provided ID not found" }), {
         status: 404,
       });
     }
