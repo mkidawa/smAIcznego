@@ -47,8 +47,8 @@ interface DietFormProps {
 }
 
 const valueToNumber = (value: string) => {
-  if (value === "" || isNaN(Number(value))) return 0;
-
+  if (value === "") return null;
+  if (isNaN(Number(value))) return 0;
   return Number(value);
 };
 
