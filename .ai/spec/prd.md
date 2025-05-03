@@ -10,16 +10,21 @@ Użytkownicy borykają się z problemem płatnych i niewystarczająco elastyczny
 
 ## 3. Wymagania funkcjonalne
 
-1. Generowanie diety:
+1. System kont użytkowników i autoryzacji:
+
+   - Umożliwienie bezpiecznej rejestracji, logowania i zarządzania kontem użytkownika.
+   - Wszystkie funkcjonalności aplikacji (poza rejestracją i logowaniem) wymagają autoryzacji.
+   - Implementacja middleware sprawdzającego stan autoryzacji użytkownika.
+   - Automatyczne przekierowanie niezalogowanych użytkowników do strony logowania.
+
+2. Generowanie diety:
    - Umożliwienie wyboru parametrów diety: kaloryczność na dzień, okres trwania (maks. 14 dni), liczba posiłków na dzień oraz rodzaj kuchni (np. azjatycka, włoska, meksykańska).
    - Wykorzystanie systemu AI (Openrouter.ai) do generowania planu diety na podstawie podanych parametrów.
-2. Profil użytkownika:
+3. Profil użytkownika:
    - Zapisywanie stałych preferencji użytkownika (alergie, wymagania zdrowotne).
    - Przechowywanie dodatkowych danych profilowych, takich jak wiek i waga (aktualizowane rzadko).
-3. Lista zakupów:
+4. Lista zakupów:
    - Automatyczne generowanie statycznej listy zakupów na podstawie wygenerowanego planu diety.
-4. System kont użytkowników:
-   - Umożliwienie bezpiecznej rejestracji, logowania i zarządzania kontem użytkownika.
 5. Walidacja formularza:
    - Wdrożenie podstawowej walidacji formularza przy wprowadzaniu parametrów diety.
 
@@ -42,6 +47,7 @@ Użytkownicy borykają się z problemem płatnych i niewystarczająco elastyczny
   - Użytkownik może założyć konto przy użyciu adresu email oraz hasła.
   - Proces logowania umożliwia bezpieczny dostęp do konta.
   - Mechanizmy zabezpieczające chronią dane użytkownika.
+  - Odzyskiwanie hasła powinno być możliwe.
 
 ### US-002: Uzupełnienie profilu użytkownika
 

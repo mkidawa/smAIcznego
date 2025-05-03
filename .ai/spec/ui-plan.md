@@ -4,6 +4,10 @@
 
 Interfejs użytkownika jest zbudowany przy użyciu Astro 5 i React 19, z integracją Tailwind CSS 4 oraz komponentów z biblioteki Shadcn/ui. Cała aplikacja wykorzystuje spójny layout, w którym stały pasek nawigacyjny dostępny jest na wszystkich widokach. Struktura UI jest zaprojektowana w taki sposób, aby zapewnić użytkownikom intuicyjną nawigację, wysoką dostępność oraz bezpieczeństwo. Widoki interfejsu odpowiadają kluczowym funkcjom opisanym w dokumentach PRD i planie API.
 
+### 1.1 Zabezpieczenia i autoryzacja
+
+Wszystkie ścieżki aplikacji (poza `/login` i `/register`) są chronione przez middleware autoryzacyjne. Niezalogowani użytkownicy są automatycznie przekierowywani do strony logowania. Middleware sprawdza obecność i ważność tokenu JWT w każdym żądaniu do chronionej ścieżki. Stan autoryzacji jest zarządzany przez Supabase Auth, a komponenty UI reagują odpowiednio na zmiany stanu logowania.
+
 ## 2. Lista widoków
 
 - **Ekran Rejestracji**

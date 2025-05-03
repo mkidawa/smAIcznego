@@ -58,7 +58,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
       </Tabs>
 
       <div className="mt-8 flex justify-end space-x-4">
-        <Button variant="outline" onClick={() => navigate("/diets/generate")}>
+        <Button className="cursor-pointer" variant="outline" onClick={() => navigate("/diets/generate")}>
           Nowa Dieta
         </Button>
       </div>

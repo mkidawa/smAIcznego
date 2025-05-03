@@ -1,0 +1,67 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+sequenceDiagram
+    autonumber
+    participant Browser as Przeglądarka
+    participant Middleware as Middleware Astro
+    participant API as API Endpoints
+    participant Auth as Supabase Auth
+
+    Note over Browser,Auth: Proces rejestracji
+    Browser->>API: Wysłanie formularza rejestracji
+    activate API
+    API->>API: Walidacja danych
+    API->>Auth: Wywołanie supabase.auth.signUp
+    Auth-->>API: Potwierdzenie rejestracji
+    API-->>Browser: Sukces rejestracji
+    deactivate API
+
+    Note over Browser,Auth: Proces logowania
+    Browser->>API: Wysłanie danych logowania
+    activate API
+    API->>Auth: Wywołanie supabase.auth.signIn
+    Auth-->>API: Token JWT + dane sesji
+    API-->>Browser: Token i potwierdzenie
+    deactivate API
+
+    Note over Browser,Auth: Weryfikacja sesji
+    Browser->>Middleware: Żądanie chronionego zasobu
+    activate Middleware
+    Middleware->>Auth: Sprawdzenie tokenu JWT
+    alt Token ważny
+        Auth-->>Middleware: Potwierdzenie ważności
+        Middleware->>Browser: Dostęp do zasobu
+    else Token nieważny/brak
+        Auth-->>Middleware: Token nieważny
+        Middleware->>Browser: Przekierowanie do logowania
+    end
+    deactivate Middleware
+
+    Note over Browser,Auth: Wylogowanie
+    Browser->>API: Żądanie wylogowania
+    activate API
+    API->>Auth: supabase.auth.signOut
+    Auth-->>API: Potwierdzenie wylogowania
+    API-->>Browser: Sukces wylogowania
+    deactivate API
+
+    Note over Browser,Auth: Reset hasła
+    Browser->>API: Żądanie resetu hasła
+    activate API
+    API->>Auth: supabase.auth.resetPasswordForEmail
+    Auth-->>API: Potwierdzenie wysłania linku
+    API-->>Browser: Informacja o wysłaniu emaila
+    deactivate API
+
+    Note over Browser,Auth: Automatyczne odświeżanie sesji
+    par Odświeżanie w tle
+        Browser->>Auth: Sprawdzenie stanu tokenu
+        alt Token wymaga odświeżenia
+            Auth-->>Browser: Nowy token JWT
+        else Token wygasł
+            Auth-->>Browser: Wymagane ponowne logowanie
+        end
+    end

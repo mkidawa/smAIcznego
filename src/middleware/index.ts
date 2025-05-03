@@ -4,12 +4,47 @@ import { Logger } from "../lib/logger";
 
 const logger = Logger.getInstance();
 
+// Ścieżki publiczne - dostępne bez logowania
+const PUBLIC_PATHS = [
+  "/login",
+  "/register",
+  "/reset-password",
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/reset-password",
+];
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const startTime = Date.now();
   const requestId = crypto.randomUUID();
 
-  // Add supabase to context
+  // Dodaj supabase do kontekstu
   context.locals.supabase = supabaseClient;
+
+  // Sprawdź czy ścieżka jest publiczna
+  if (PUBLIC_PATHS.includes(context.url.pathname)) {
+    return next();
+  }
+
+  // Sprawdź sesję użytkownika
+  const {
+    data: { user },
+    error,
+  } = await supabaseClient.auth.getUser();
+
+  if (error || !user) {
+    logger.info("Unauthorized access attempt", {
+      requestId,
+      path: context.url.pathname,
+    });
+    return context.redirect("/login");
+  }
+
+  // Dodaj dane użytkownika do kontekstu
+  context.locals.user = {
+    id: user.id,
+    email: user.email ?? null,
+  };
 
   // Log request start
   logger.info("Started processing HTTP request", {
