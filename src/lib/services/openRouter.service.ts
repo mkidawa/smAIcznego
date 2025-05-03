@@ -201,7 +201,7 @@ export class OpenRouterService {
       return jsonResponse;
     } catch (error) {
       if (attempt < this._retryCount) {
-        this.logger.warn("Request failed, retrying", { attempt, error: error as Error });
+        this.logger.warn("Request failed, retrying", { attempt, error: error });
         const delay = this._retryDelay * Math.pow(2, attempt - 1);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return this._sendWithRetry(payload, attempt + 1);

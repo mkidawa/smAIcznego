@@ -59,7 +59,7 @@ export class DietService {
       .select("*")
       .single();
     if (insertError || !insertedDiet) {
-      this.logger.error("Failed to create diet", insertError as Error, { generationId: data.generation_id });
+      this.logger.error("Failed to create diet", insertError, { generationId: data.generation_id });
       return new Response(
         JSON.stringify({
           error: "SERVER_ERROR",
@@ -136,5 +136,58 @@ export class DietService {
 
     this.logger.info("Diet retrieved successfully by generation ID", { generationId });
     return new Response(JSON.stringify(diet), { status: 200 });
+  }
+
+  async getDiets(page = 1, per_page = 10) {
+    this.logger.info("Starting diets retrieval", { page, per_page });
+
+    // Calculate offset for pagination
+    const offset = (page - 1) * per_page;
+
+    // Get total count of diets for pagination
+    const { count, error: countError } = await this.supabase
+      .from("diet")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", import.meta.env.MOCK_USER_ID);
+
+    if (countError) {
+      this.logger.error("Failed to get total count of diets", countError);
+      return new Response(
+        JSON.stringify({
+          error: "SERVER_ERROR",
+          details: "Failed to get total count of diets",
+        }),
+        { status: 500 }
+      );
+    }
+
+    // Get paginated diets
+    const { data: diets, error: dietsError } = await this.supabase
+      .from("diet")
+      .select("*")
+      .eq("user_id", import.meta.env.MOCK_USER_ID)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + per_page - 1);
+
+    if (dietsError) {
+      this.logger.error("Failed to retrieve diets", dietsError);
+      return new Response(
+        JSON.stringify({
+          error: "SERVER_ERROR",
+          details: "Failed to retrieve diets",
+        }),
+        { status: 500 }
+      );
+    }
+
+    const response = {
+      data: diets,
+      page,
+      per_page,
+      total: count || 0,
+    };
+
+    this.logger.info("Diets retrieved successfully", { page, per_page, total: count });
+    return new Response(JSON.stringify(response), { status: 200 });
   }
 }

@@ -1,3 +1,5 @@
+import { PostgrestError } from "@supabase/supabase-js";
+
 type LogLevel = "info" | "warn" | "error";
 
 interface LogEntry {
@@ -5,7 +7,7 @@ interface LogEntry {
   message: string;
   timestamp: string;
   context?: Record<string, unknown>;
-  error?: Error;
+  error?: Error | PostgrestError;
 }
 
 export class Logger {
@@ -26,12 +28,23 @@ export class Logger {
 
   private formatLogEntry(entry: LogEntry): string {
     const context = entry.context ? `\nContext: ${JSON.stringify(entry.context, null, 2)}` : "";
-    const errorStack = entry.error?.stack ? `\nError stack: ${entry.error.stack}` : "";
+    let errorInfo = "";
 
-    return `[${entry.timestamp}] ${entry.level.toUpperCase()}: ${entry.message}${context}${errorStack}`;
+    if (entry.error) {
+      if ("code" in entry.error && "message" in entry.error) {
+        // Handle PostgrestError
+        const pgError = entry.error as PostgrestError;
+        errorInfo = `\nPostgresError: ${pgError.message}\nCode: ${pgError.code}\nDetails: ${pgError.details}\nHint: ${pgError.hint}`;
+      } else {
+        // Handle standard Error
+        errorInfo = `\nError: ${entry.error.message}\nStack: ${entry.error.stack}`;
+      }
+    }
+
+    return `[${entry.timestamp}] ${entry.level.toUpperCase()}: ${entry.message}${context}${errorInfo}`;
   }
 
-  private log(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error) {
+  private log(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error | PostgrestError) {
     const entry: LogEntry = {
       level,
       message,
@@ -68,7 +81,7 @@ export class Logger {
     this.log("warn", message, context);
   }
 
-  error(message: string, error?: Error, context?: Record<string, unknown>) {
+  error(message: string, error?: Error | PostgrestError, context?: Record<string, unknown>) {
     this.log("error", message, context, error);
   }
 }

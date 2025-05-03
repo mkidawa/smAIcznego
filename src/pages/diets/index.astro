@@ -1,9 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { DietsView } from "@/modules/diet/dietaryPlan/components/DietsView";
 import { Toaster } from "sonner";
 ---
 
 <Layout>
-  <h1>Diety</h1>
+  <DietsView client:load />
   <Toaster client:load />
 </Layout>

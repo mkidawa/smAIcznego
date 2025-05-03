@@ -32,7 +32,7 @@ Interfejs użytkownika jest zbudowany przy użyciu Astro 5 i React 19, z integra
 
 - **Ekran Generowania Diety**
 
-  - Ścieżka widoku: `/diet/generate`
+  - Ścieżka widoku: `/diets/generate`
   - Główny cel: Pozwolenie użytkownikowi na wprowadzenie parametrów diety oraz uruchomienie procesu generowania planu dietetycznego.
   - Kluczowe informacje do wyświetlenia: Formularz z parametrami (kaloryczność, liczba dni, liczba posiłków, preferowane kuchnie) oraz wizualizacja postępu (loader w formie paska postępu).
   - Kluczowe komponenty: Input, Select, Button, Progress Bar, formularz walidowany przez react hook form i Zod.
@@ -40,7 +40,7 @@ Interfejs użytkownika jest zbudowany przy użyciu Astro 5 i React 19, z integra
 
 - **Ekran Przeglądu Diety i Listy Zakupów**
 
-  - Ścieżka widoku: `/diet/overview`
+  - Ścieżka widoku: `/diets`
   - Główny cel: Prezentacja wygenerowanego planu diety wraz z dołączoną listą zakupów.
   - Kluczowe informacje do wyświetlenia: Harmonogram posiłków, lista zakupów oraz podsumowanie kluczowych elementów diety.
   - Kluczowe komponenty: Card, List, Button, Toast dla komunikatów.

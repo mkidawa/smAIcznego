@@ -160,3 +160,29 @@ export interface RecipeResponse {
   instructions: string | null;
   created_at: string;
 }
+
+// ======================= PAGINATION =======================
+/**
+ * Generic type for paginated responses
+ */
+export interface PaginatedResponse<T> {
+  data: T[];
+  page: number;
+  per_page: number;
+  total: number;
+}
+
+/**
+ * DTO for diet response in paginated list
+ */
+export interface DietResponse {
+  id: number;
+  user_id: string;
+  generation_id: number;
+  number_of_days: number;
+  calories_per_day: number;
+  preferred_cuisines: CuisineType[];
+  status: DietStatus;
+  created_at: string;
+  end_date: string;
+}

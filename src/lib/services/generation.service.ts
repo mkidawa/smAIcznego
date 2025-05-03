@@ -27,7 +27,7 @@ export class GenerationService {
       .single();
 
     if (genError || !generation) {
-      this.logger.error("Failed to create generation record", genError as Error);
+      this.logger.error("Failed to create generation record", genError);
       throw new Error(genError ? genError.message : "Failed to create generation record");
     }
 
@@ -40,7 +40,7 @@ export class GenerationService {
     };
     const { error: logError } = await this.supabase.from("generation_log").insert(logPayload);
     if (logError) {
-      this.logger.error("Failed to create generation log", logError as Error, { generationId: generation.id });
+      this.logger.error("Failed to create generation log", logError, { generationId: generation.id });
       throw new Error(logError.message);
     }
 
@@ -76,7 +76,7 @@ export class GenerationService {
             .eq("id", generation.id);
 
           if (updateError) {
-            this.logger.error("Failed to update generation status", updateError as Error, {
+            this.logger.error("Failed to update generation status", updateError, {
               generationId: generation.id,
             });
             return;
@@ -101,7 +101,7 @@ export class GenerationService {
             created_at: new Date().toISOString(),
           });
 
-          this.logger.error("Diet generation failed", error as Error, { generationId: generation.id });
+          this.logger.error("Diet generation failed", error, { generationId: generation.id });
         });
     } catch (error) {
       // Log initialization error

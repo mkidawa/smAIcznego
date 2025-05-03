@@ -62,7 +62,7 @@ export class MealService {
       .eq("diet_id", dietId);
 
     if (error) {
-      this.logger.error("Failed to check meal uniqueness", error as Error, { dietId });
+      this.logger.error("Failed to check meal uniqueness", error, { dietId });
       throw new Error(`Failed to check meal uniqueness: ${error.message}`);
     }
 
@@ -105,7 +105,7 @@ export class MealService {
       .select("id");
 
     if (insertError) {
-      this.logger.error("Failed to create meals", insertError as Error, { dietId });
+      this.logger.error("Failed to create meals", insertError, { dietId });
       throw new Error(`Failed to create meals: ${insertError.message}`);
     }
 
@@ -116,7 +116,7 @@ export class MealService {
       .eq("id", dietId);
 
     if (updateError) {
-      this.logger.error("Failed to update diet status", updateError as Error, { dietId });
+      this.logger.error("Failed to update diet status", updateError, { dietId });
       throw new Error(`Failed to update diet status: ${updateError.message}`);
     }
 
