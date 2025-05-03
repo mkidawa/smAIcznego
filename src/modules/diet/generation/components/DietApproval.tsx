@@ -4,19 +4,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { DietStatus } from "@/types";
 
 interface DietApprovalProps {
   diet: DietPlanResponse;
   onApprove: () => void;
   onReject: () => void;
+  dietStatus: DietStatus;
 }
 
-const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }) => {
+const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, dietStatus }) => {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Przegląd Wygenerowanej Diety</CardTitle>
+          <CardTitle>
+            Przegląd Wygenerowanej Diety {dietStatus === "ready" ? "- zatwierdzona" : ""}
+            {dietStatus === "ready" && (
+              <p className="text-muted-foreground text-sm mt-4">
+                Dieta została zatwierdzona przez użytkownika. Nie można jej już edytować.
+              </p>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="plan" className="w-full">
@@ -80,14 +89,24 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject }
         </CardContent>
       </Card>
 
-      <div className="flex justify-end space-x-4">
-        <Button variant="outline" onClick={onReject} className="cursor-pointer">
-          Odrzuć
-        </Button>
-        <Button onClick={onApprove} className="cursor-pointer">
-          Zatwierdź
-        </Button>
-      </div>
+      {dietStatus !== "ready" && (
+        <div className="flex justify-end space-x-4">
+          <Button variant="outline" onClick={onReject} className="cursor-pointer">
+            Odrzuć
+          </Button>
+          <Button onClick={onApprove} className="cursor-pointer">
+            Zatwierdź
+          </Button>
+        </div>
+      )}
+
+      {dietStatus === "ready" && (
+        <div className="flex justify-end space-x-4">
+          <a href="/diets" className="cursor-pointer">
+            Powrót
+          </a>
+        </div>
+      )}
     </div>
   );
 };

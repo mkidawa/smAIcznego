@@ -8,6 +8,8 @@ import type { CreateGenerationCommand, CreateMealCommand } from "../../../../typ
 import { useCreateDiet } from "../../dietaryPlan/hooks/useCreateDiet.ts";
 import { useAddMealsInBulk } from "@/modules/meals/hooks/useAddMealsInBulk.ts";
 import { useCreateShoppingList } from "@/modules/shoppingList/hooks/useCreateShoppingList.ts";
+import { useGetDiet } from "../../dietaryPlan/hooks/useGetDiet.ts";
+import { navigate } from "astro:transitions/client";
 
 const DietGenerateView: React.FC = () => {
   const [step, setStep] = useState<"form" | "approval">("form");
@@ -21,8 +23,13 @@ const DietGenerateView: React.FC = () => {
   const { createDiet, isLoading: isCreatingDiet } = useCreateDiet();
   const { addMeals, isLoading: isAddingMeals } = useAddMealsInBulk();
   const { createShoppingList, isLoading: isCreatingShoppingList } = useCreateShoppingList();
+  const {
+    diet: fetchedDiet,
+    isLoading: isGettingDiet,
+    trigger: triggerRefetch,
+  } = useGetDiet({ generationId: generatedDiet?.id });
 
-  const isLoading = isGenerating || isCreatingDiet || isAddingMeals || isCreatingShoppingList;
+  const isLoading = isGenerating || isCreatingDiet || isAddingMeals || isCreatingShoppingList || isGettingDiet;
 
   const handleGenerateDiet = async (data: CreateGenerationCommand) => {
     await generateDiet(data);
@@ -33,37 +40,56 @@ const DietGenerateView: React.FC = () => {
 
     const { calories_per_day, number_of_days, preferred_cuisines } = generatedDiet.source_text;
 
-    const diet = await createDiet({
-      calories_per_day,
-      number_of_days,
-      preferred_cuisines,
-      generation_id: generatedDiet.id,
-    });
+    let dietToUse;
 
-    // Preview meals to bulk create
-    const meals: CreateMealCommand[] = generatedDiet.preview.diet_plan
-      .flatMap((day, index) =>
-        day.meals.map((meal) => ({
-          day: index,
-          meal_type: meal.meal_type,
-          approx_calories: meal.calories,
-          instructions: meal.ingredients
-            .map((ingredient) => {
-              return `${ingredient.name} ${ingredient.quantity}`;
-            })
-            .join("\n"),
-        }))
-      )
-      .flat();
+    if (!fetchedDiet) {
+      const diet = await createDiet({
+        calories_per_day,
+        number_of_days,
+        preferred_cuisines,
+        generation_id: generatedDiet.id,
+      });
+      dietToUse = diet;
+    } else {
+      dietToUse = fetchedDiet;
+    }
 
-    await addMeals({
-      dietId: diet.id,
-      meals,
-    });
+    if (dietToUse.status === "draft") {
+      // Preview meals to bulk create
+      const meals: CreateMealCommand[] = generatedDiet.preview.diet_plan
+        .flatMap((day, index) =>
+          day.meals.map((meal) => ({
+            day: index,
+            meal_type: meal.meal_type,
+            approx_calories: meal.calories,
+            instructions: meal.ingredients
+              .map((ingredient) => {
+                return `${ingredient.name} ${ingredient.quantity}`;
+              })
+              .join("\n"),
+          }))
+        )
+        .flat();
 
-    await createShoppingList(diet.id, {
-      items: generatedDiet.preview.shopping_list.map((ingredient) => `${ingredient.name} - ${ingredient.quantity}`),
-    });
+      await addMeals({
+        dietId: dietToUse.id,
+        meals,
+      });
+
+      dietToUse = { ...dietToUse, status: "meals_ready" };
+    }
+
+    if (dietToUse.status === "meals_ready") {
+      await createShoppingList(dietToUse.id, {
+        items: generatedDiet.preview.shopping_list.map((ingredient) => `${ingredient.name} - ${ingredient.quantity}`),
+      });
+
+      dietToUse = { ...dietToUse, status: "ready" };
+
+      await triggerRefetch();
+    }
+
+    navigate("/diets");
   };
 
   const handleReject = () => {
@@ -77,7 +103,12 @@ const DietGenerateView: React.FC = () => {
       {step === "form" && <DietForm onSubmit={handleGenerateDiet} isLoading={isLoading} />}
       {isGenerating && <Progress value={progress} className="mt-4" />}
       {!isGenerating && step === "approval" && generatedDiet?.preview && (
-        <DietApproval diet={generatedDiet.preview} onApprove={handleApprove} onReject={handleReject} />
+        <DietApproval
+          dietStatus={fetchedDiet?.status || "draft"}
+          diet={generatedDiet.preview}
+          onApprove={handleApprove}
+          onReject={handleReject}
+        />
       )}
     </div>
   );

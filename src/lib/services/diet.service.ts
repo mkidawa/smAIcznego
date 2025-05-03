@@ -86,11 +86,7 @@ export class DietService {
       .from("diet")
       .select(
         `
-        *,
-        meals (
-          *,
-          recipe (*)
-        )
+        *
       `
       )
       .eq("id", dietId)
@@ -109,6 +105,35 @@ export class DietService {
     }
 
     this.logger.info("Diet retrieved successfully", { dietId });
+    return new Response(JSON.stringify(diet), { status: 200 });
+  }
+
+  async getDietByGenerationId(generationId: number) {
+    this.logger.info("Starting diet retrieval by generation ID", { generationId });
+
+    const { data: diet, error } = await this.supabase
+      .from("diet")
+      .select(
+        `
+        *
+      `
+      )
+      .eq("generation_id", generationId)
+      .eq("user_id", "3a405225-034c-4eb8-80d0-1cd2b79327a6")
+      .single();
+
+    if (error || !diet) {
+      this.logger.warn("Diet not found for generation", { generationId, error });
+      return new Response(
+        JSON.stringify({
+          error: "DIET_NOT_FOUND",
+          details: error ? error.message : "Diet not found for this generation",
+        }),
+        { status: 404 }
+      );
+    }
+
+    this.logger.info("Diet retrieved successfully by generation ID", { generationId });
     return new Response(JSON.stringify(diet), { status: 200 });
   }
 }
