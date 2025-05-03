@@ -1,31 +1,13 @@
-import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Logger } from "../logger";
-import { UnauthorizedError, ServerError } from "../errors/api-error";
-
-export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-export const registerSchema = z
-  .object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-export const resetPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-export type LoginInput = z.infer<typeof loginSchema>;
-export type RegisterInput = z.infer<typeof registerSchema>;
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+import { UnauthorizedError, ServerError, ApiError } from "../errors/api-error";
+import {
+  updatePasswordSchema,
+  type LoginInput,
+  type RegisterInput,
+  type ResetPasswordInput,
+  type UpdatePasswordInput,
+} from "@/modules/auth/types/auth.schema";
 
 export class AuthService {
   private readonly logger = Logger.getInstance();
@@ -46,10 +28,7 @@ export class AuthService {
     }
 
     this.logger.info("User logged in successfully", { email });
-    return new Response(JSON.stringify({ user: authData.user }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return { user: authData.user };
   }
 
   async register({ email, password }: RegisterInput) {
@@ -66,17 +45,15 @@ export class AuthService {
     }
 
     this.logger.info("User registered successfully", { email });
-    return new Response(JSON.stringify({ user: authData.user }), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return { user: authData.user };
   }
 
   async resetPassword({ email }: ResetPasswordInput) {
     this.logger.info("Attempting password reset", { email });
 
     const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      // TODO: change to production url
+      redirectTo: `http://localhost:3000/new-password`,
     });
 
     if (error) {
@@ -85,10 +62,29 @@ export class AuthService {
     }
 
     this.logger.info("Password reset email sent successfully", { email });
-    return new Response(JSON.stringify({ message: "Password reset email sent" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    return { message: "Password reset email sent" };
+  }
+
+  async updatePassword(input: UpdatePasswordInput) {
+    this.logger.info("Attempting to update password");
+
+    // Validate input
+    const result = updatePasswordSchema.safeParse(input);
+    if (!result.success) {
+      throw result.error;
+    }
+
+    const { error } = await this.supabase.auth.updateUser({
+      password: result.data.password,
     });
+
+    if (error) {
+      this.logger.error("Password update failed", error);
+      throw new ApiError("Password update failed", 500, error.message);
+    }
+
+    this.logger.info("Password updated successfully");
+    return { message: "Password updated successfully" };
   }
 
   async logout() {
@@ -102,9 +98,6 @@ export class AuthService {
     }
 
     this.logger.info("User logged out successfully");
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return { success: true };
   }
 }

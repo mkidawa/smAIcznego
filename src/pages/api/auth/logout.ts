@@ -4,5 +4,12 @@ import { errorHandler } from "@/middleware/error-handler";
 
 export const POST: APIRoute = errorHandler(async ({ locals }) => {
   const authService = new AuthService(locals.supabase);
-  return await authService.logout();
+  const response = await authService.logout();
+
+  return new Response(JSON.stringify(response), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 });

@@ -7,11 +7,7 @@ export const resetPasswordSchema = z.object({
 
 type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
-interface UseResetPasswordOptions {
-  redirectUrl?: string;
-}
-
-export const useResetPassword = ({ redirectUrl = "/login" }: UseResetPasswordOptions = {}) => {
+export const useResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -36,9 +32,6 @@ export const useResetPassword = ({ redirectUrl = "/login" }: UseResetPasswordOpt
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 3000);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

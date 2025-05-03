@@ -10,12 +10,8 @@ import { useResetPassword, resetPasswordSchema } from "@/modules/auth/hooks/useR
 
 type FormData = z.infer<typeof resetPasswordSchema>;
 
-interface ResetPasswordFormProps {
-  redirectUrl?: string;
-}
-
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ redirectUrl = "/login" }) => {
-  const { resetPassword, isLoading, error, success } = useResetPassword({ redirectUrl });
+const ResetPasswordForm: React.FC = () => {
+  const { resetPassword, isLoading, error, success } = useResetPassword();
 
   const formsMethods = useForm<FormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -27,6 +23,8 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ redirectUrl = "/l
 
   const handleSubmit = async (data: FormData) => {
     await resetPassword(data);
+    // Clear form
+    formsMethods.reset();
   };
 
   return (
@@ -34,7 +32,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ redirectUrl = "/l
       {error && <ErrorAlert message={error} />}
       {success && (
         <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
-          Link do resetowania hasła został wysłany na podany adres email. Za chwilę zostaniesz przekierowany.
+          Link do resetowania hasła został wysłany na podany adres email.
         </div>
       )}
 

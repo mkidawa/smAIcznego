@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { AuthService, registerSchema } from "@/lib/services/auth.service";
+import { AuthService } from "@/lib/services/auth.service";
 import { errorHandler } from "@/middleware/error-handler";
 import { ValidationError } from "@/lib/errors/api-error";
-
+import { registerSchema } from "@/modules/auth/types/auth.schema";
 export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
   const rawData = await request.json();
   const result = registerSchema.safeParse(rawData);
@@ -12,5 +12,12 @@ export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
   }
 
   const authService = new AuthService(locals.supabase);
-  return await authService.register(result.data);
+  const response = await authService.register(result.data);
+
+  return new Response(JSON.stringify(response), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 });
