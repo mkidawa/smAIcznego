@@ -1,0 +1,22 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { DietDetailsView } from "@/modules/diet/dietaryPlan/components/DietDetailsView";
+import { Toaster } from "sonner";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const dietId = parseInt(id, 10);
+
+if (isNaN(dietId)) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout>
+  <DietDetailsView client:load dietId={dietId} />
+  <Toaster client:load />
+</Layout>

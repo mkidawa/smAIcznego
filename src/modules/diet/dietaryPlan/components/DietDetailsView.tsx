@@ -6,21 +6,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { navigate } from "astro:transitions/client";
 import type { MealItem } from "../../diet.types";
-import { useEffect, useState } from "react";
+import { MEALS_MAP } from "@/lib/constants";
 
-export const DietsView = () => {
-  const [dietId, setDietId] = useState<number | null>(null);
+interface DietViewProps {
+  dietId: number;
+}
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("dietId");
-    if (id) {
-      setDietId(parseInt(id, 10));
-    } else {
-      navigate("/diets/generate");
-    }
-  }, []);
-
+export const DietDetailsView = ({ dietId }: DietViewProps) => {
   const { dietDetails, isLoading, error } = useGetDietDetail({ dietId: dietId || 0 });
 
   if (error) {
@@ -48,8 +40,12 @@ export const DietsView = () => {
 
       <Tabs defaultValue="plan" className="mt-8">
         <TabsList>
-          <TabsTrigger value="plan">Plan Posiłków</TabsTrigger>
-          <TabsTrigger value="shopping">Lista Zakupów</TabsTrigger>
+          <TabsTrigger className="cursor-pointer" value="plan">
+            Plan Posiłków
+          </TabsTrigger>
+          <TabsTrigger className="cursor-pointer" value="shopping">
+            Lista Zakupów
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="plan">
@@ -127,7 +123,7 @@ const MealSchedule = ({ mealsByDay }: { mealsByDay: Record<number, MealItem[]> }
             {meals.map((meal) => (
               <div key={meal.id} className="border-l-2 border-primary pl-4">
                 <h4 className="font-medium">
-                  {meal.meal_type} ({meal.approx_calories} kcal)
+                  {MEALS_MAP[meal.meal_type]} ({meal.approx_calories} kcal)
                 </h4>
                 {meal.instructions && (
                   <p className="mt-2 text-sm text-muted-foreground whitespace-pre-line">{meal.instructions}</p>

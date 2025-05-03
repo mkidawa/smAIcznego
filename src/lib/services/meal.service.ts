@@ -127,4 +127,43 @@ export class MealService {
 
     return data.map((meal: { id: number }) => meal.id);
   }
+
+  /**
+   * Pobiera wszystkie posiłki dla danej diety
+   */
+  async getMealsByDietId(dietId: number) {
+    this.logger.info("Fetching meals for diet", { dietId });
+
+    const { data: meals, error } = await this.supabase
+      .from("meal")
+      .select(
+        `
+        id,
+        day,
+        meal_type,
+        instructions,
+        approx_calories,
+        recipe (
+          id,
+          title,
+          description,
+          instructions
+        )
+      `
+      )
+      .eq("diet_id", dietId)
+      .order("day", { ascending: true });
+
+    if (error) {
+      this.logger.error("Failed to fetch meals", error, { dietId });
+      throw new Error(`Failed to fetch meals: ${error.message}`);
+    }
+
+    this.logger.info("Successfully fetched meals", {
+      dietId,
+      mealsCount: meals.length,
+    });
+
+    return meals;
+  }
 }

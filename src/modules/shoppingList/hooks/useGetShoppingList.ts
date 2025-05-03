@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { GetShoppingListResponse } from "../shopping-list.types";
 
 interface UseGetShoppingListProps {
   dietId: number;
@@ -28,8 +29,8 @@ export const useGetShoppingList = ({ dietId }: UseGetShoppingListProps): UseGetS
           throw new Error(errorData.details || "Nie udało się pobrać listy zakupów");
         }
 
-        const data = await response.json();
-        setShoppingList(data);
+        const data: GetShoppingListResponse = await response.json();
+        setShoppingList(data.items);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd");
       } finally {

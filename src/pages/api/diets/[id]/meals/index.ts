@@ -109,3 +109,40 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     });
   }
 };
+
+export const GET: APIRoute = async ({ params, locals }) => {
+  try {
+    const dietId = Number(params.id);
+    if (isNaN(dietId)) {
+      return new Response(JSON.stringify({ error: "Invalid diet ID format" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const mealService = new MealService(locals.supabase);
+
+    // Sprawdź czy dieta istnieje
+    const { exists } = await mealService.validateDiet(dietId);
+
+    if (!exists) {
+      return new Response(JSON.stringify({ error: "Diet not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const meals = await mealService.getMealsByDietId(dietId);
+
+    return new Response(JSON.stringify(meals), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error in get meals endpoint:", error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};

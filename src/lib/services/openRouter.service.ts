@@ -11,7 +11,7 @@ export class OpenRouterService {
   private readonly logger = Logger.getInstance();
 
   private readonly _defaultSystemMessage: string =
-    "You are a diet planning expert. Your task is to create personalized meal plans with shopping lists. You MUST respond ONLY in JSON format containing an object with two keys: 'diet_plan' and 'shopping_list'. Do not add any text before or after the JSON. The response format must match the provided schema. Start numbering meals (meal_number_in_day) and days (day) from 0.";
+    "Jesteś ekspertem w planowaniu diet. Twoim zadaniem jest tworzenie spersonalizowanych planów posiłków wraz z listami zakupów. MUSISZ odpowiadać TYLKO w formacie JSON zawierającym obiekt z dwoma kluczami: 'diet_plan' i 'shopping_list'. Nie dodawaj żadnego tekstu przed ani po JSON. Format odpowiedzi musi być zgodny z dostarczonym schematem. Zacznij numerowanie posiłków (meal_number_in_day) i dni (day) od 0.";
   private readonly _defaultModelName: string = "openai/gpt-4o-mini";
   private readonly _defaultModelParameters = {
     temperature: 0.7,

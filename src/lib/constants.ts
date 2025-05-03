@@ -9,3 +9,11 @@ export const CUISINES_MAP = {
   keto: "Ketogeniczna",
   paleo: "Paleo",
 };
+
+export const MEALS_MAP = {
+  breakfast: "Śniadanie",
+  lunch: "Obiad",
+  dinner: "Kolacja",
+  "second breakfast": "Drugie śniadanie",
+  "afternoon snack": "Podwieczorek",
+};
