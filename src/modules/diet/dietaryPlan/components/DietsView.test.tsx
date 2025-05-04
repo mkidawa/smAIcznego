@@ -2,19 +2,16 @@ import { describe, it, expect, vi, beforeAll, afterAll, afterEach } from "vitest
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DietsView } from "./DietsView";
-import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { toast } from "sonner";
 import { navigate } from "astro:transitions/client";
-import { handlers } from "@/test/msw-handlers";
+import { server } from "@/test/msw-server";
 
 vi.mock("sonner", () => ({
   toast: {
     error: vi.fn(),
   },
 }));
-
-const server = setupServer(...handlers);
 
 describe("DietsView", () => {
   beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
