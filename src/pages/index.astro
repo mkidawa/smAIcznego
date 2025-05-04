@@ -1,5 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+const {
+  data: { user },
+} = await Astro.locals.supabase.auth.getUser();
+if (user) {
+  return Astro.redirect("/diets");
+}
+return Astro.redirect("/login");
 ---
 
 <Layout />

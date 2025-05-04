@@ -6,6 +6,7 @@ const logger = Logger.getInstance();
 
 // Ścieżki publiczne - dostępne bez logowania
 const PUBLIC_PATHS = [
+  "/",
   "/login",
   "/register",
   "/reset-password",
