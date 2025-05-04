@@ -9,6 +9,7 @@ import {
   type UpdatePasswordInput,
 } from "@/modules/auth/types/auth.schema";
 import type { Database } from "@/db/database.types";
+import { supabaseAdmin } from "@/db/supabase.admin";
 
 export class AuthService {
   private readonly logger = Logger.getInstance();
@@ -40,8 +41,6 @@ export class AuthService {
       password,
     });
 
-    // Automatically create a profile for the user
-
     if (error) {
       this.logger.error("Registration failed", error, { email });
       throw new ServerError("Registration failed", error.message);
@@ -50,8 +49,11 @@ export class AuthService {
     this.logger.info("User registered successfully", { email });
 
     if (authData.user) {
-      const { error: profileError } = await this.supabase.from("profiles").insert({
+      // Użyj supabaseAdmin do utworzenia profilu, omijając ograniczenia RLS
+      const { error: profileError } = await supabaseAdmin.from("profiles").insert({
         user_id: authData.user.id,
+        terms_accepted: false,
+        allergies: [],
       });
 
       if (profileError) {
