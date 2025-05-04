@@ -36,6 +36,9 @@ setup("authenticate", async ({ page, baseURL }) => {
   await submitButton.waitFor({ state: "visible" });
   await Promise.all([page.waitForNavigation({ waitUntil: "networkidle" }), submitButton.click()]);
 
+  // Wait for navigation to complete
+  await page.waitForURL(`${baseURL}/diets`);
+
   // Store authentication state
   await page.context().storageState({ path: authFile });
 });
