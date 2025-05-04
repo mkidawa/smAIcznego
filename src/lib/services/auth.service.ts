@@ -8,11 +8,12 @@ import {
   type ResetPasswordInput,
   type UpdatePasswordInput,
 } from "@/modules/auth/types/auth.schema";
+import type { Database } from "@/db/database.types";
 
 export class AuthService {
   private readonly logger = Logger.getInstance();
 
-  constructor(private supabase: SupabaseClient) {}
+  constructor(private supabase: SupabaseClient<Database>) {}
 
   async login({ email, password }: LoginInput) {
     this.logger.info("Attempting user login", { email });
@@ -39,12 +40,28 @@ export class AuthService {
       password,
     });
 
+    // Automatically create a profile for the user
+
     if (error) {
       this.logger.error("Registration failed", error, { email });
       throw new ServerError("Registration failed", error.message);
     }
 
     this.logger.info("User registered successfully", { email });
+
+    if (authData.user) {
+      const { error: profileError } = await this.supabase.from("profiles").insert({
+        user_id: authData.user.id,
+      });
+
+      if (profileError) {
+        this.logger.error("Profile creation failed", profileError, { email });
+        throw new ServerError("Profile creation failed", profileError.message);
+      } else {
+        this.logger.info("Profile created successfully", { email });
+      }
+    }
+
     return { user: authData.user };
   }
 

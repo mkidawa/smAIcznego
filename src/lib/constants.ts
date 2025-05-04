@@ -17,3 +17,9 @@ export const MEALS_MAP = {
   "second breakfast": "Drugie śniadanie",
   "afternoon snack": "Podwieczorek",
 };
+
+export const GENDER_MAP = {
+  male: "Mężczyzna",
+  female: "Kobieta",
+  other: "Inna",
+};
