@@ -91,11 +91,11 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, 
 
       {dietStatus !== "ready" && (
         <div className="flex justify-end space-x-4">
-          <Button onClick={onReject} variant="outline" className="w-full cursor-pointer" data-testid="reject-button">
-            Odrzuć i Wygeneruj Ponownie
+          <Button onClick={onReject} variant="outline" className="cursor-pointer" data-testid="reject-button">
+            Odrzuć
           </Button>
-          <Button onClick={onApprove} className="w-full cursor-pointer" data-testid="approve-button">
-            Zatwierdź Dietę
+          <Button onClick={onApprove} className="cursor-pointer" data-testid="approve-button">
+            Zatwierdź
           </Button>
         </div>
       )}
