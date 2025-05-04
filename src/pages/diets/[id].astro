@@ -14,6 +14,12 @@ const dietId = parseInt(id, 10);
 if (isNaN(dietId)) {
   return Astro.redirect("/404");
 }
+
+const acceptedTerms = Astro.locals.user?.profile?.terms_accepted;
+
+if (!acceptedTerms) {
+  return Astro.redirect("/profile");
+}
 ---
 
 <Layout>

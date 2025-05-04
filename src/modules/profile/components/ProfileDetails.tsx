@@ -17,7 +17,16 @@ export const ProfileDetails = ({ profile, onEdit }: ProfileDetailsProps) => {
     <Card className="w-full max-w-lg mx-auto mt-8">
       <CardHeader className="pb-4">
         <CardTitle className="text-2xl font-bold">Twój profil</CardTitle>
-        <CardDescription>Informacje o profilu dietetycznym</CardDescription>
+        <CardDescription>
+          <div className="flex flex-col items-start gap-2">
+            Informacje o profilu dietetycznym
+            {!profile.terms_accepted && (
+              <Badge variant="outline">
+                <span className="text-red-500">Wypełnij profil aby móc korzystać z aplikacji</span>
+              </Badge>
+            )}
+          </div>
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

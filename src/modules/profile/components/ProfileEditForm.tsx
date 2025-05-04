@@ -187,7 +187,9 @@ export function ProfileEditForm({ profile, onCancel, onSubmit }: ProfileEditForm
               name="allergies"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Alergie</FormLabel>
+                  <FormLabel>
+                    Alergie <span className="text-xs text-muted-foreground">(opcjonalnie)</span>
+                  </FormLabel>
                   <FormDescription>Wybierz z listy lub wprowadź własne alergie pokarmowe</FormDescription>
                   <div className="flex flex-col gap-2">
                     <div className="flex gap-2">

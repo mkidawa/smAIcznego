@@ -2,6 +2,12 @@
 import Layout from "@/layouts/Layout.astro";
 import { DietsView } from "@/modules/diet/dietaryPlan/components/DietsView";
 import { Toaster } from "@/components/ui/sonner";
+
+const acceptedTerms = Astro.locals.user?.profile?.terms_accepted;
+
+if (!acceptedTerms) {
+  return Astro.redirect("/profile");
+}
 ---
 
 <Layout>

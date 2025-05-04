@@ -2,7 +2,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./db/database.types";
-
+import type { ProfileResponse } from "./types";
 declare global {
   namespace App {
     interface Locals {
@@ -10,6 +10,7 @@ declare global {
       user?: {
         id: string;
         email: string | null;
+        profile: ProfileResponse | null;
       };
     }
   }

@@ -1,17 +1,17 @@
 import { useProfile } from "../hooks/useProfile";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileDetails } from "./ProfileDetails";
 import { useState } from "react";
 import { ProfileEditForm } from "./ProfileEditForm";
+import { Loader2 } from "lucide-react";
 
 export const ProfileView = () => {
   const [editMode, setEditMode] = useState(false);
   const { profile, isLoading, error, refresh, updateProfile } = useProfile();
 
   if (isLoading) {
-    return <ProfileSkeleton />;
+    return <ProfileLoader />;
   }
 
   if (error) {
@@ -62,38 +62,11 @@ const EmptyProfile = ({ refresh }: { refresh: () => Promise<void> }) => (
   </Card>
 );
 
-const ProfileSkeleton = () => {
+const ProfileLoader = () => {
   return (
-    <Card className="w-full max-w-md mx-auto mt-8">
-      <CardHeader className="pb-4">
-        <Skeleton className="h-8 w-3/4" />
-        <Skeleton className="h-4 w-1/2 mt-2" />
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          {Array(4)
-            .fill(null)
-            .map((_, i) => (
-              <div key={i}>
-                <Skeleton className="h-4 w-20 mb-2" />
-                <Skeleton className="h-6 w-24" />
-              </div>
-            ))}
-        </div>
-        <div>
-          <Skeleton className="h-4 w-20 mb-2" />
-          <div className="flex flex-wrap gap-2">
-            {Array(3)
-              .fill(null)
-              .map((_, i) => (
-                <Skeleton key={i} className="h-6 w-16" />
-              ))}
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Skeleton className="h-10 w-full" />
-      </CardFooter>
-    </Card>
+    <div className="w-full max-w-md mx-auto mt-8 flex flex-col items-center justify-center p-8">
+      <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <p className="mt-4 text-muted-foreground">Ładowanie profilu...</p>
+    </div>
   );
 };

@@ -40,10 +40,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect("/login");
   }
 
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  if (profileError) {
+    logger.error("Error fetching profile", profileError);
+  }
+
   // Dodaj dane użytkownika do kontekstu
   context.locals.user = {
     id: user.id,
     email: user.email ?? null,
+    profile,
   };
 
   // Log request start
