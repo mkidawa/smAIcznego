@@ -178,13 +178,7 @@ export class MealService {
         day,
         meal_type,
         instructions,
-        approx_calories,
-        recipe (
-          id,
-          title,
-          description,
-          instructions
-        )
+        approx_calories
       `
       )
       .eq("diet_id", dietId)
