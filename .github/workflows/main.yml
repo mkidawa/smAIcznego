@@ -52,6 +52,16 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Create .env.test file
+        run: |
+          echo "SUPABASE_URL=$SUPABASE_URL" > .env.test
+          echo "SUPABASE_KEY=$SUPABASE_KEY" >> .env.test
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env.test
+          echo "OPENROUTER_API_KEY=$OPENROUTER_API_KEY" >> .env.test
+          echo "E2E_USERNAME_ID=$E2E_USERNAME_ID" >> .env.test
+          echo "E2E_USERNAME=$E2E_USERNAME" >> .env.test
+          echo "E2E_PASSWORD=$E2E_PASSWORD" >> .env.test
+
       - name: E2E Tests
         run: npm run test:e2e
         env:
