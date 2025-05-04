@@ -1,3 +1,4 @@
+import type { Diet, MealItem } from "@/modules/diet/diet.types";
 import { http, HttpResponse } from "msw";
 
 // Przykładowa odpowiedź API
@@ -17,7 +18,7 @@ const exampleRecipes = [
 ];
 
 // Przykładowe diety
-const exampleDiets = [
+const exampleDiets: Diet[] = [
   {
     id: 1,
     number_of_days: 7,
@@ -26,6 +27,7 @@ const exampleDiets = [
     end_date: "2024-03-27T12:00:00Z",
     status: "ready",
     preferred_cuisines: ["italian", "polish"],
+    generation_id: 1,
   },
   {
     id: 2,
@@ -35,6 +37,56 @@ const exampleDiets = [
     end_date: "2024-04-04T12:00:00Z",
     status: "draft",
     preferred_cuisines: ["asian"],
+    generation_id: 2,
+  },
+];
+
+// Przykładowa lista zakupów
+const exampleShoppingList: string[] = ["mąka", "jajka", "ziemniaki", "twaróg", "cebula"];
+
+// Przykładowe posiłki dla diety
+const exampleMeals: MealItem[] = [
+  {
+    id: 1,
+    day: 0,
+    meal_type: "breakfast",
+    approx_calories: 450,
+    instructions: "Przygotuj makaron spaghetti z mięsem mielonym wołowym",
+  },
+  {
+    id: 2,
+    day: 0,
+    meal_type: "lunch",
+    approx_calories: 650,
+    instructions: "Przygotuj pierogi ruskie z mięsem mielonym wołowym",
+  },
+  {
+    id: 3,
+    day: 0,
+    meal_type: "dinner",
+    approx_calories: 850,
+    instructions: "Przygotuj makaron spaghetti z mięsem mielonym wołowym",
+  },
+  {
+    id: 4,
+    day: 1,
+    meal_type: "breakfast",
+    approx_calories: 450,
+    instructions: "Przygotuj makaron spaghetti z mięsem mielonym wołowym",
+  },
+  {
+    id: 5,
+    day: 1,
+    meal_type: "lunch",
+    approx_calories: 650,
+    instructions: "Przygotuj pierogi ruskie z mięsem mielonym wołowym",
+  },
+  {
+    id: 6,
+    day: 1,
+    meal_type: "dinner",
+    approx_calories: 850,
+    instructions: "Przygotuj makaron spaghetti z mięsem mielonym wołowym",
   },
 ];
 
@@ -64,6 +116,30 @@ export const handlers = [
     }
 
     return HttpResponse.json(diet);
+  }),
+
+  // GET - pobieranie listy zakupów dla diety
+  http.get("/api/diets/:id/shopping-list", ({ params }) => {
+    const { id } = params;
+    const diet = exampleDiets.find((diet) => diet.id === Number(id));
+
+    if (!diet) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json({ items: exampleShoppingList });
+  }),
+
+  // GET - pobieranie posiłków dla diety
+  http.get("/api/diets/:id/meals", ({ params }) => {
+    const { id } = params;
+    const diet = exampleDiets.find((diet) => diet.id === Number(id));
+
+    if (!diet) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json(exampleMeals);
   }),
 
   // GET - pobieranie listy przepisów

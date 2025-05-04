@@ -31,7 +31,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
   }
 
   return (
-    <div data-testid="diet-details-view" className="container mx-auto py-8">
+    <div data-testid="diet-details" className="container mx-auto py-8">
       <SummaryCard
         numberOfDays={dietDetails.number_of_days}
         caloriesPerDay={dietDetails.calories_per_day}
@@ -68,7 +68,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
 };
 
 const LoadingState = () => (
-  <div className="container mx-auto py-8 space-y-8">
+  <div data-testid="loading-state" className="container mx-auto py-8 space-y-8">
     <Card>
       <CardHeader>
         <div className="h-8 w-1/3 bg-muted animate-pulse rounded" />
@@ -120,7 +120,7 @@ const MealSchedule = ({ mealsByDay }: { mealsByDay: Record<number, MealItem[]> }
           <CardTitle className="text-lg">Dzień {parseInt(day) + 1}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-4" data-testid={`day-${parseInt(day) + 1}-meals`}>
             {meals.map((meal) => (
               <div key={meal.id} className="border-l-2 border-primary pl-4">
                 <h4 className="font-medium">
