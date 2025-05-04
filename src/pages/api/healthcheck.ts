@@ -8,7 +8,7 @@ const logger = Logger.getInstance();
 
 export const GET: APIRoute = errorHandler(async () => {
   // Simple query to check database connectivity using the profile table
-  const { error } = await supabaseClient.from("profile").select("user_id").limit(1);
+  const { error } = await supabaseClient.from("profiles").select("user_id").limit(1);
 
   if (error) {
     logger.error("Healthcheck failed:", error);

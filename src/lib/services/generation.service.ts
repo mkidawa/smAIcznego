@@ -33,7 +33,7 @@ export class GenerationService {
     // Insert record into generation table
     const now = new Date();
     const { data: generation, error: genError } = await this.supabase
-      .from("generation")
+      .from("generations")
       .insert({
         user_id: userId,
         source_text: JSON.stringify(data),
@@ -55,7 +55,7 @@ export class GenerationService {
       message: "Generation record created",
       created_at: now.toISOString(),
     };
-    const { error: logError } = await this.supabase.from("generation_log").insert(logPayload);
+    const { error: logError } = await this.supabase.from("generation_logs").insert(logPayload);
     if (logError) {
       this.logger.error("Failed to create generation log", logError, { generationId: generation.id });
       throw new ServerError("Failed to create generation log", logError);
@@ -85,7 +85,7 @@ export class GenerationService {
         .then(async (response) => {
           // Update generation status to completed and save response in metadata
           const { error: updateError } = await this.supabase
-            .from("generation")
+            .from("generations")
             .update({
               status: "completed",
               metadata: response,
@@ -100,7 +100,7 @@ export class GenerationService {
           }
 
           // Log success
-          await this.supabase.from("generation_log").insert({
+          await this.supabase.from("generation_logs").insert({
             generation_id: generation.id,
             event_type: "response",
             message: "Diet generation completed successfully",
@@ -111,7 +111,7 @@ export class GenerationService {
         })
         .catch(async (error) => {
           // Log error
-          await this.supabase.from("generation_log").insert({
+          await this.supabase.from("generation_logs").insert({
             generation_id: generation.id,
             event_type: "error",
             message: `Diet generation error: ${error.message}`,
@@ -122,7 +122,7 @@ export class GenerationService {
         });
     } catch (error) {
       // Log initialization error
-      await this.supabase.from("generation_log").insert({
+      await this.supabase.from("generation_logs").insert({
         generation_id: generation.id,
         event_type: "error",
         message: `OpenRouter initialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -144,7 +144,7 @@ export class GenerationService {
     this.logger.info("Starting generation retrieval", { generationId: id, userId });
 
     const { data: generation, error } = await this.supabase
-      .from("generation")
+      .from("generations")
       .select("*")
       .eq("id", id)
       .eq("user_id", userId)

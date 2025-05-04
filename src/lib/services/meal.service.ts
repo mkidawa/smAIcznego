@@ -49,7 +49,7 @@ export class MealService {
     this.logger.info("Validating diet existence", { dietId, userId });
 
     const { data: diet, error } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("number_of_days")
       .eq("id", dietId)
       .eq("user_id", userId)
@@ -93,7 +93,7 @@ export class MealService {
 
     // Check conflicts with existing meals
     const { data: existingMeals, error } = await this.supabase
-      .from("meal")
+      .from("meals")
       .select("day, meal_type")
       .eq("diet_id", dietId);
 
@@ -131,7 +131,7 @@ export class MealService {
 
     // Add meals
     const { data, error: insertError } = await this.supabase
-      .from("meal")
+      .from("meals")
       .insert(
         meals.map((meal) => ({
           ...meal,
@@ -147,7 +147,7 @@ export class MealService {
 
     // Update diet status
     const { error: updateError } = await this.supabase
-      .from("diet")
+      .from("diets")
       .update({ status: "meals_ready" as DietStatus })
       .eq("id", dietId);
 
@@ -171,7 +171,7 @@ export class MealService {
     this.logger.info("Fetching meals for diet", { dietId });
 
     const { data: meals, error } = await this.supabase
-      .from("meal")
+      .from("meals")
       .select(
         `
         id,

@@ -47,7 +47,7 @@ export class DietService {
     this.logger.info("Starting diet creation", { generationId: data.generation_id });
 
     const { data: generationData, error: generationError } = await this.supabase
-      .from("generation")
+      .from("generations")
       .select("*")
       .eq("id", data.generation_id)
       .eq("user_id", userId)
@@ -60,7 +60,7 @@ export class DietService {
 
     // Check if diet for this generation already exists
     const { data: existingDiet } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("*")
       .eq("generation_id", data.generation_id)
       .eq("user_id", userId)
@@ -76,7 +76,7 @@ export class DietService {
 
     // Insert new diet record with 'draft' status
     const { data: insertedDiet, error: insertError } = await this.supabase
-      .from("diet")
+      .from("diets")
       .insert({
         number_of_days: data.number_of_days,
         calories_per_day: data.calories_per_day,
@@ -111,7 +111,7 @@ export class DietService {
     this.logger.info("Starting diet retrieval", { dietId });
 
     const { data: diet, error } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("*")
       .eq("id", dietId)
       .eq("user_id", userId)
@@ -131,7 +131,7 @@ export class DietService {
     this.logger.info("Starting diet retrieval by generation ID", { generationId });
 
     const { data: diet, error } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("*")
       .eq("generation_id", generationId)
       .eq("user_id", userId)
@@ -155,7 +155,7 @@ export class DietService {
 
     // Get total count of diets for pagination
     const { count, error: countError } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId);
 
@@ -166,7 +166,7 @@ export class DietService {
 
     // Get paginated diets
     const { data: diets, error: dietsError } = await this.supabase
-      .from("diet")
+      .from("diets")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })

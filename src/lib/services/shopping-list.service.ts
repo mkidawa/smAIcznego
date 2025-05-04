@@ -58,7 +58,7 @@ export class ShoppingListService {
     try {
       // Check if diet exists
       const { data: diet, error: dietError } = await this.supabase
-        .from("diet")
+        .from("diets")
         .select("*")
         .eq("id", dietId)
         .eq("user_id", userId)
@@ -77,7 +77,7 @@ export class ShoppingListService {
 
       // Check if shopping list already exists
       const { data: existingList } = await this.supabase
-        .from("shopping_list")
+        .from("shopping_lists")
         .select("*")
         .eq("diet_id", dietId)
         .maybeSingle();
@@ -95,7 +95,7 @@ export class ShoppingListService {
 
       // Create new shopping list
       const { data: insertedList, error: insertError } = await this.supabase
-        .from("shopping_list")
+        .from("shopping_lists")
         .insert({
           diet_id: dietId,
           items: validationResult.data.items,
@@ -110,13 +110,13 @@ export class ShoppingListService {
 
       // Check if diet has assigned meals
       const { count: mealsCount } = await this.supabase
-        .from("meal")
+        .from("meals")
         .select("*", { count: "exact", head: true })
         .eq("diet_id", dietId);
 
       // If there are meals, update diet status to 'ready'
       if (mealsCount && mealsCount > 0) {
-        await this.supabase.from("diet").update({ status: "ready" }).eq("id", dietId);
+        await this.supabase.from("diets").update({ status: "ready" }).eq("id", dietId);
         this.logger.info("Updated diet status to 'ready'", { dietId });
       }
 
@@ -150,7 +150,7 @@ export class ShoppingListService {
     try {
       // Check if diet exists
       const { data: diet, error: dietError } = await this.supabase
-        .from("diet")
+        .from("diets")
         .select("*")
         .eq("id", dietId)
         .eq("user_id", userId)
@@ -169,7 +169,7 @@ export class ShoppingListService {
 
       // Get shopping list
       const { data: shoppingList, error: shoppingListError } = await this.supabase
-        .from("shopping_list")
+        .from("shopping_lists")
         .select("*")
         .eq("diet_id", dietId)
         .single();

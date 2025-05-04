@@ -29,7 +29,7 @@ export class ProfileService {
     try {
       this.logger.info("Fetching user profile", { userId });
 
-      const { data, error } = await this.supabase.from("profile").select("*").eq("user_id", userId).single();
+      const { data, error } = await this.supabase.from("profiles").select("*").eq("user_id", userId).single();
 
       if (error) {
         this.logger.error("Failed to fetch profile", error, { userId });
@@ -64,7 +64,7 @@ export class ProfileService {
 
       // Sprawdź czy profil już istnieje
       const { data: existingProfile } = await this.supabase
-        .from("profile")
+        .from("profiles")
         .select("user_id")
         .eq("user_id", userId)
         .single();
@@ -74,7 +74,7 @@ export class ProfileService {
       }
 
       const { data: newProfile, error } = await this.supabase
-        .from("profile")
+        .from("profiles")
         .insert([{ user_id: userId, ...data }])
         .select()
         .single();
@@ -111,7 +111,7 @@ export class ProfileService {
 
       // Sprawdź czy profil istnieje
       const { data: existingProfile } = await this.supabase
-        .from("profile")
+        .from("profiles")
         .select("user_id")
         .eq("user_id", userId)
         .single();
@@ -121,7 +121,7 @@ export class ProfileService {
       }
 
       const { data: updatedProfile, error } = await this.supabase
-        .from("profile")
+        .from("profiles")
         .update(data)
         .eq("user_id", userId)
         .select()

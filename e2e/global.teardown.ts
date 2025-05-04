@@ -30,10 +30,10 @@ teardown("logout and database cleanup", async () => {
     }
 
     // Usuń wszystkie rekordy z generations oprócz id=1
-    const { error: generationsError } = await supabase.from("generation").delete().neq("id", 1);
+    const { error: generationsError } = await supabase.from("generations").delete().neq("id", 1);
 
     // Usuń wszystkie rekordy z generations_log
-    const { error: generationsLogError } = await supabase.from("generation_log").delete().neq("id", 0);
+    const { error: generationsLogError } = await supabase.from("generation_logs").delete().neq("id", 0);
 
     if (generationsError) {
       console.error("Error cleaning up generations:", generationsError);
