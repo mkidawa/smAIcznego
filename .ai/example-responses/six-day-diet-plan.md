@@ -3,6 +3,7 @@
 ## Dzień 1
 
 ### Śniadanie (595 kcal)
+
 - Omlet z 3 jajek z dodatkami:
   - 1 łyżka oliwy z oliwek do smażenia
   - 50g wędzonego łososia
@@ -13,6 +14,7 @@
 - 1 mały pomidor, pokrojony (100g)
 
 ### Obiad (805 kcal)
+
 - Kurczak pieczony z ziołami (150g):
   - Pierś z kurczaka
   - Marynata: 1 łyżka oliwy z oliwek, rozmaryn, tymianek, czosnek (2 ząbki), sól, pieprz
@@ -28,12 +30,14 @@
   - Przyprawy: sól, pieprz
 
 ### Podwieczorek (300 kcal)
+
 - Jogurt grecki (150g)
 - Orzechy włoskie (20g)
 - Miód (1 łyżeczka)
 - Borówki (80g)
 
 ### Kolacja (500 kcal)
+
 - Zupa krem z dyni (300ml):
   - 200g dyni
   - 1 marchewka
@@ -50,6 +54,7 @@
 ## Dzień 2
 
 ### Śniadanie (580 kcal)
+
 - Owsianka (300g):
   - 60g płatków owsianych
   - 200ml mleka 2%
@@ -59,6 +64,7 @@
   - Cynamon do smaku
 
 ### Obiad (820 kcal)
+
 - Makaron pełnoziarnisty z łososiem (porcja na 2 dni):
   - 75g suchego makaronu pełnoziarnistego
   - 150g świeżego łososia
@@ -70,6 +76,7 @@
   - Przyprawy: sól, pieprz, koperek, sok z cytryny
 
 ### Podwieczorek (300 kcal)
+
 - Koktajl proteinowy:
   - 250ml mleka migdałowego
   - 1 miarka (30g) białka serwatkowego
@@ -78,6 +85,7 @@
   - 10g nasion chia
 
 ### Kolacja (500 kcal)
+
 - Sałatka z komosą ryżową (porcja na 2 dni):
   - 60g suchej komosy ryżowej
   - 100g pieczonej piersi z kurczaka
@@ -93,6 +101,7 @@
 ## Dzień 3
 
 ### Śniadanie (590 kcal)
+
 - Kanapki z pastą jajeczną:
   - 2 kromki chleba pełnoziarnistego
   - 3 jajka ugotowane na twardo
@@ -103,19 +112,23 @@
 - 1 jabłko
 
 ### Obiad (820 kcal)
+
 - Druga porcja makaronu pełnoziarnistego z łososiem z Dnia 2
 
 ### Podwieczorek (290 kcal)
+
 - 2 mandarynki
 - 30g ciemnej czekolady (70% kakao)
 - 20g migdałów
 
 ### Kolacja (500 kcal)
+
 - Druga porcja sałatki z komosą ryżową z Dnia 2
 
 ## Dzień 4
 
 ### Śniadanie (600 kcal)
+
 - Smoothie bowl:
   - 1 banan
   - 150g mrożonych jagód
@@ -125,6 +138,7 @@
   - 1 łyżka nasion słonecznika
 
 ### Obiad (800 kcal)
+
 - Gulasz wołowy z warzywami (porcja na 2 dni):
   - 150g wołowiny (łopatka)
   - 1 marchewka
@@ -138,11 +152,13 @@
 - 100g kaszy gryczanej (waga przed ugotowaniem)
 
 ### Podwieczorek (300 kcal)
+
 - Serek wiejski (150g)
 - 1 gruszka
 - 20g orzechów włoskich
 
 ### Kolacja (500 kcal)
+
 - Tortilla pełnoziarnista (1 sztuka) z:
   - 100g pieczonej piersi z indyka
   - 50g sera żółtego
@@ -154,6 +170,7 @@
 ## Dzień 5
 
 ### Śniadanie (580 kcal)
+
 - Jajecznica z 3 jajek:
   - 1 łyżka masła do smażenia
   - 50g wędzonego boczku
@@ -163,15 +180,18 @@
 - 1/2 papryki, pokrojonej w paski
 
 ### Obiad (810 kcal)
+
 - Druga porcja gulaszu wołowego z warzywami z Dnia 4
 - 100g kaszy gryczanej (waga przed ugotowaniem)
 
 ### Podwieczorek (310 kcal)
+
 - 1 banan
 - 2 łyżki masła orzechowego
 - 150ml kefiru
 
 ### Kolacja (500 kcal)
+
 - Frittata z warzywami:
   - 3 jajka
   - 50g sera feta
@@ -192,6 +212,7 @@
 ## Dzień 6
 
 ### Śniadanie (590 kcal)
+
 - Pancakes owsiane:
   - 60g płatków owsianych (zmielonych na mąkę)
   - 1 dojrzały banan
@@ -205,6 +226,7 @@
   - 1 łyżka miodu
 
 ### Obiad (800 kcal)
+
 - Kotlet schabowy (150g):
   - Schab wieprzowy
   - Panierka: 1 jajko, 30g bułki tartej, przyprawy (sól, pieprz, czosnek granulowany)
@@ -218,6 +240,7 @@
   - Przyprawy: kminek, pieprz
 
 ### Podwieczorek (300 kcal)
+
 - Koktajl:
   - 200ml kefiru
   - 1 banan
@@ -226,6 +249,7 @@
   - 1/2 łyżeczki miodu
 
 ### Kolacja (510 kcal)
+
 - Zapiekanka z batata i tuńczyka:
   - 200g batata
   - 100g tuńczyka w wodzie

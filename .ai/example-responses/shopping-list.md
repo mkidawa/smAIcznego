@@ -1,6 +1,7 @@
 # Lista zakupów na 6-dniową dietę 2200 kcal
 
 ## Nabiał
+
 - Jajka: 15 sztuk
 - Jogurt grecki: 1 duże opakowanie (1 kg)
 - Mleko 2%: 1 litr
@@ -13,6 +14,7 @@
 - Serek wiejski: 150 g
 
 ## Mięso i ryby
+
 - Pierś z kurczaka: 400 g
 - Pierś z indyka: 150 g
 - Schab wieprzowy: 200 g
@@ -23,6 +25,7 @@
 - Tuńczyk w wodzie: 2 puszki (po 150-180 g)
 
 ## Pieczywo i produkty zbożowe
+
 - Chleb pełnoziarnisty: 1 bochenek
 - Chleb żytni: 1 mały bochenek
 - Płatki owsiane: 200 g
@@ -34,6 +37,7 @@
 - Tortilla pełnoziarnista: 1 opakowanie (4 sztuki)
 
 ## Warzywa
+
 - Szpinak: 2 opakowania (po 150 g)
 - Pomidory: 7 sztuk
 - Ogórki: 2 sztuki
@@ -55,6 +59,7 @@
 - Koperek: 1 pęczek
 
 ## Owoce
+
 - Banany: 5 sztuk
 - Jabłka: 2 sztuki
 - Gruszka: 1 sztuka
@@ -67,6 +72,7 @@
 - Mandarynki: 2 sztuki
 
 ## Orzechy i nasiona
+
 - Orzechy włoskie: 50 g
 - Orzechy laskowe: 20 g
 - Orzechy nerkowca: 40 g
@@ -75,6 +81,7 @@
 - Nasiona słonecznika: 20 g
 
 ## Tłuszcze
+
 - Oliwa z oliwek: 1 butelka (250 ml)
 - Olej rzepakowy: 1 butelka (500 ml)
 - Olej kokosowy: 100 g
@@ -82,6 +89,7 @@
 - Masło orzechowe: 1 słoik (200 g)
 
 ## Inne
+
 - Białko serwatkowe: 1 opakowanie (można kupić na wagę 50 g)
 - Miód: 1 słoik
 - Czekolada ciemna (70% kakao): 1 tabliczka (100 g)
@@ -89,6 +97,7 @@
 - Proszek do pieczenia: 1 opakowanie
 
 ## Przyprawy (jeśli nie posiadasz)
+
 - Sól
 - Pieprz
 - Rozmaryn
