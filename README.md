@@ -9,6 +9,7 @@
 - [Zakres Projektu](#zakres-projektu)
 - [Status Projektu](#status-projektu)
 - [Licencja](#licencja)
+- [Testowanie](#testowanie)
 
 ## Opis Projektu
 
@@ -33,6 +34,14 @@ Aplikacja **smaAIcznego** to MVP mające na celu pomoc użytkownikom w wyborze i
 
 - Supabase (PostgreSQL, autentykacja użytkowników)
 - Integracja z Openrouter.ai
+
+**Testy:**
+
+- Vitest - testy jednostkowe i integracyjne
+- MSW (Mock Service Worker) - mockowanie API w testach
+- Playwright - testy end-to-end
+- Lighthouse CI - testy wydajnościowe
+- Codecov - pomiar pokrycia kodu testami
 
 **CI/CD i Hosting:**
 
@@ -62,6 +71,9 @@ Aplikacja **smaAIcznego** to MVP mające na celu pomoc użytkownikom w wyborze i
 - `npm run lint` – Sprawdza kod za pomocą ESLint.
 - `npm run lint:fix` – Automatycznie naprawia wykryte problemy w kodzie.
 - `npm run format` – Formatuje kod przy użyciu Prettier.
+- `npm run test:unit` – Uruchamia testy jednostkowe z Vitest.
+- `npm run test:e2e` – Uruchamia testy end-to-end z Playwright.
+- `npm run test:coverage` – Generuje raport pokrycia kodu testami.
 
 ## Zakres Projektu
 
@@ -84,3 +96,40 @@ Projekt znajduje się w fazie MVP. Główne funkcjonalności są wdrażane i tes
 ## Licencja
 
 Projekt jest udostępniany na licencji MIT.
+
+## Testowanie
+
+Aplikacja wykorzystuje dwa główne rodzaje testów:
+
+### Testy jednostkowe i integracyjne (Vitest)
+
+Testy jednostkowe i integracyjne służą do weryfikacji poprawności działania pojedynczych komponentów i ich interakcji.
+
+Dostępne komendy:
+
+- `npm run test` - uruchamia wszystkie testy jednostkowe
+- `npm run test:watch` - uruchamia testy w trybie watch
+- `npm run test:ui` - uruchamia testy w interaktywnym interfejsie graficznym
+- `npm run test:coverage` - generuje raport pokrycia kodu testami
+
+Struktura testów jednostkowych:
+
+- Pliki testowe powinny mieć rozszerzenie `.test.tsx` lub `.test.ts`
+- Testy powinny znajdować się obok testowanych plików
+- Do mockowania API używamy Mock Service Worker (MSW)
+
+### Testy end-to-end (Playwright)
+
+Testy e2e służą do testowania aplikacji w całości, symulując interakcje użytkownika w przeglądarce.
+
+Dostępne komendy:
+
+- `npm run test:e2e` - uruchamia wszystkie testy e2e
+- `npm run test:e2e:ui` - uruchamia testy e2e w interfejsie graficznym
+- `npm run test:e2e:codegen` - uruchamia generator testów e2e
+
+Struktura testów e2e:
+
+- Testy znajdują się w katalogu `e2e`
+- Wykorzystujemy wzorzec Page Object Model do organizacji kodu testów
+- Wykonujemy testy tylko na przeglądarce Chrome zgodnie z wymaganiami projektu

@@ -18,7 +18,7 @@ export const DietsView = () => {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div data-testid="diets-view" className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Twoje Diety</h1>
         <Button className="cursor-pointer" onClick={() => navigate("/diets/generate")}>
@@ -29,7 +29,7 @@ export const DietsView = () => {
       {diets.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div data-testid="diets-list" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {diets.map((diet) => (
             <DietCard
               key={diet.id}
@@ -49,7 +49,7 @@ export const DietsView = () => {
 };
 
 const LoadingState = () => (
-  <div className="container mx-auto py-8">
+  <div data-testid="loading-state" className="container mx-auto py-8">
     <div className="flex justify-between items-center mb-8">
       <div className="h-8 w-48 bg-muted animate-pulse rounded" />
       <div className="h-10 w-40 bg-muted animate-pulse rounded" />
@@ -75,7 +75,7 @@ const LoadingState = () => (
 );
 
 const EmptyState = () => (
-  <Card className="text-center py-12 max-w-sm mx-auto">
+  <Card data-testid="empty-state" className="text-center py-12 max-w-sm mx-auto">
     <CardHeader>
       <CardTitle>Brak Diet</CardTitle>
       <CardDescription>
@@ -134,7 +134,11 @@ const DietCard = ({
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/diets/${id}`)}>
+    <Card
+      data-testid="diet-card"
+      className="hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={() => navigate(`/diets/${id}`)}
+    >
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { navigate } from "astro:transitions/client";
 import type { MealItem } from "../../diet.types";
 import { MEALS_MAP } from "@/lib/constants";
+import { groupMealsByDay } from "../utils/groupMealsByDay";
 
 interface DietViewProps {
   dietId: number;
@@ -30,7 +31,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div data-testid="diet-details-view" className="container mx-auto py-8">
       <SummaryCard
         numberOfDays={dietDetails.number_of_days}
         caloriesPerDay={dietDetails.calories_per_day}
@@ -154,16 +155,3 @@ const ShoppingListView = ({ items }: { items: string[] }) => (
     </CardContent>
   </Card>
 );
-
-const groupMealsByDay = (meals: MealItem[]): Record<number, MealItem[]> => {
-  return meals.reduce(
-    (acc, meal) => {
-      if (!acc[meal.day]) {
-        acc[meal.day] = [];
-      }
-      acc[meal.day].push(meal);
-      return acc;
-    },
-    {} as Record<number, MealItem[]>
-  );
-};
