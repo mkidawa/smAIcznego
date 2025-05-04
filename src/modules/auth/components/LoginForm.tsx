@@ -47,7 +47,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectUrl = "/diets" }) => {
           control={formsMethods.control}
           name="email"
           render={({ field, fieldState }) => (
-            <Input id="email" type="email" {...field} className="mt-1" errorMessage={fieldState.error?.message} />
+            <Input
+              id="email"
+              type="email"
+              {...field}
+              className="mt-1"
+              errorMessage={fieldState.error?.message}
+              data-testid="auth-input-email"
+            />
           )}
         />
       </div>
@@ -60,7 +67,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectUrl = "/diets" }) => {
           control={formsMethods.control}
           name="password"
           render={({ field, fieldState }) => (
-            <Input id="password" type="password" {...field} className="mt-1" errorMessage={fieldState.error?.message} />
+            <Input
+              id="password"
+              type="password"
+              {...field}
+              className="mt-1"
+              errorMessage={fieldState.error?.message}
+              data-testid="auth-input-password"
+            />
           )}
         />
       </div>
