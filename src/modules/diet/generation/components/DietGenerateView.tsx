@@ -98,10 +98,12 @@ const DietGenerateView: React.FC = () => {
 
   return (
     <div className="p-4 w-full max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-8">Generowanie Diety</h1>
-      {error && <ErrorAlert message={error} />}
+      <h1 className="text-2xl font-bold mb-8" data-testid="diet-generate-title">
+        Generowanie Diety
+      </h1>
+      {error && <ErrorAlert message={error} data-testid="diet-generate-error" />}
       {step === "form" && <DietForm onSubmit={handleGenerateDiet} isLoading={isLoading} />}
-      {isGenerating && <Progress value={progress} className="mt-4" />}
+      {isGenerating && <Progress value={progress} className="mt-4" data-testid="diet-generate-progress" />}
       {!isGenerating && step === "approval" && generatedDiet?.preview && (
         <DietApproval
           dietStatus={fetchedDiet?.status || "draft"}

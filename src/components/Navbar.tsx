@@ -54,6 +54,7 @@ const Navbar = () => {
           </NavigationMenuList>
         </NavigationMenu>
         <Button
+          data-testid="logout-button"
           variant="ghost"
           onClick={handleLogout}
           className="text-red-500 hover:text-red-700 hover:bg-red-100 cursor-pointer"

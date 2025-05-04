@@ -11,7 +11,7 @@ test.describe("Diety - przepływ użytkownika", () => {
     dietDetailsPage = new DietDetailsPage(page);
   });
 
-  test("powinien wyświetlić listę diet i przejść do szczegółów", async () => {
+  test("should display diet list and navigate to details", async () => {
     await dietsPage.goto();
     await dietsPage.waitForLoaded();
     await dietsPage.expectDietsListVisible();

@@ -65,7 +65,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
   });
 
   return (
-    <form onSubmit={formsMethods.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={formsMethods.handleSubmit(onSubmit)} className="space-y-4" data-testid="diet-generate-form">
       <div>
         <label htmlFor="number_of_days" className="block text-sm font-medium text-gray-700">
           Liczba dni
@@ -81,6 +81,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               onChange={(e) => field.onChange(valueToNumber(e.target.value))}
               className="mt-1"
               errorMessage={fieldState.error?.message}
+              data-testid="days-input"
             />
           )}
         />
@@ -101,6 +102,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               onChange={(e) => field.onChange(valueToNumber(e.target.value))}
               className="mt-1"
               errorMessage={fieldState.error?.message}
+              data-testid="calories-input"
             />
           )}
         />
@@ -121,6 +123,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               onChange={(e) => field.onChange(valueToNumber(e.target.value))}
               className="mt-1"
               errorMessage={fieldState.error?.message}
+              data-testid="meals-input"
             />
           )}
         />
@@ -140,13 +143,14 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               value={field.value}
               onChange={(value) => field.onChange(value)}
               errorMessage={fieldState.error?.message}
+              data-testid="cuisines-input"
             />
           )}
         />
       </div>
 
       <div className="pt-4">
-        <Button type="submit" disabled={isLoading} className="w-full cursor-pointer">
+        <Button type="submit" disabled={isLoading} className="w-full cursor-pointer" data-testid="submit-button">
           {isLoading ? "Generowanie..." : "Generuj Dietę"}
         </Button>
       </div>
