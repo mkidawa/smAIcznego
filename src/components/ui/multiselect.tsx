@@ -18,6 +18,7 @@ interface MultiselectProps {
   className?: string;
   wrapperClassName?: string;
   errorMessage?: string;
+  disabled?: boolean;
 }
 
 export function Multiselect({
@@ -28,6 +29,7 @@ export function Multiselect({
   className,
   wrapperClassName,
   errorMessage,
+  disabled,
 }: MultiselectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -47,6 +49,7 @@ export function Multiselect({
         className={cn(
           "border-input flex min-h-9 w-full flex-wrap items-center gap-2 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
           errorMessage && "border-destructive ring-destructive/20 dark:ring-destructive/40",
+          disabled && "opacity-50 cursor-not-allowed",
           className
         )}
       >
@@ -60,13 +63,14 @@ export function Multiselect({
                 type="button"
                 className="ml-1 rounded-full outline-none hover:bg-secondary/80 cursor-pointer"
                 onClick={() => handleRemove(v)}
+                disabled={disabled}
               >
                 <XIcon className="size-3" />
               </button>
             </Badge>
           );
         })}
-        <Select open={isOpen} onOpenChange={setIsOpen} value="" onValueChange={handleSelect}>
+        <Select open={isOpen} onOpenChange={setIsOpen} value="" onValueChange={handleSelect} disabled={disabled}>
           <SelectTrigger className="h-auto min-w-[120px] border-0 bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>

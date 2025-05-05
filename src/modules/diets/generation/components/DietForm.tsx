@@ -82,6 +82,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               className="mt-1"
               errorMessage={fieldState.error?.message}
               data-testid="days-input"
+              disabled={isLoading}
             />
           )}
         />
@@ -103,6 +104,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               className="mt-1"
               errorMessage={fieldState.error?.message}
               data-testid="calories-input"
+              disabled={isLoading}
             />
           )}
         />
@@ -124,6 +126,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               className="mt-1"
               errorMessage={fieldState.error?.message}
               data-testid="meals-input"
+              disabled={isLoading}
             />
           )}
         />
@@ -144,6 +147,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
               onChange={(value) => field.onChange(value)}
               errorMessage={fieldState.error?.message}
               data-testid="cuisines-input"
+              disabled={isLoading}
             />
           )}
         />
