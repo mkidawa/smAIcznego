@@ -3,8 +3,6 @@ import { DietService } from "@/lib/services/diet.service";
 import { errorHandler } from "@/middleware/error-handler";
 import { ValidationError } from "@/lib/errors/api-error";
 
-export const prerender = false;
-
 export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
   const body = await request.json();
   const dietService = new DietService(locals.supabase);

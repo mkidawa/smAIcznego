@@ -2,8 +2,6 @@ import { ShoppingListService } from "@/lib/services/shopping-list.service";
 import type { APIRoute } from "astro";
 import { errorHandler } from "@/middleware/error-handler";
 
-export const prerender = false;
-
 export const POST: APIRoute = errorHandler(async ({ params, request, locals }) => {
   const dietId = Number(params.id);
   const data = await request.json();

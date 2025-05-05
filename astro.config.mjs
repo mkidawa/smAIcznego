@@ -27,9 +27,6 @@ export default defineConfig({
   },
   integrations: [react()],
   adapter: cloudflare({
-    platformProxy: {
-      enabled: true,
-    },
     sessionKVBindingName: "SESSION",
   }),
   experimental: { session: true },

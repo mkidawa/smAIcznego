@@ -13,5 +13,3 @@ export const POST: APIRoute = errorHandler(async ({ request }) => {
     headers: { "Content-Type": "application/json" },
   });
 });
-
-export const prerender = false;

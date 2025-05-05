@@ -3,8 +3,6 @@ import { z } from "zod";
 import { GenerationService } from "@/lib/services/generation.service";
 import { errorHandler } from "@/middleware/error-handler";
 
-export const prerender = false;
-
 const createGenerationSchema = z.object({
   number_of_days: z.number().min(1).max(14),
   calories_per_day: z.number().positive(),
