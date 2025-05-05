@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { MealItem } from "../../diet/diet.types";
+import type { MealItem } from "../../diets/diet.types";
 
 interface UseGetMealsProps {
   dietId: number;

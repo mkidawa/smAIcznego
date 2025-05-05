@@ -1,6 +1,6 @@
 import { useGetDiet } from "./useGetDiet";
 import { useGetMeals } from "../../../meals/hooks/useGetMeals";
-import { useGetShoppingList } from "@/modules/shoppingList/hooks/useGetShoppingList";
+import { useGetShoppingList } from "@/modules/shoppingLists/hooks/useGetShoppingList";
 import type { DietDetailViewModel } from "../../diet.types";
 
 interface UseGetDietDetailProps {

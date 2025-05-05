@@ -7,7 +7,7 @@ import useGenerateDiet from "../hooks/useGenerateDiet.ts";
 import type { CreateGenerationCommand, CreateMealCommand } from "../../../../types.ts";
 import { useCreateDiet } from "../../dietaryPlan/hooks/useCreateDiet.ts";
 import { useAddMealsInBulk } from "@/modules/meals/hooks/useAddMealsInBulk.ts";
-import { useCreateShoppingList } from "@/modules/shoppingList/hooks/useCreateShoppingList.ts";
+import { useCreateShoppingList } from "@/modules/shoppingLists/hooks/useCreateShoppingList.ts";
 import { useGetDiet } from "../../dietaryPlan/hooks/useGetDiet.ts";
 import { navigate } from "astro:transitions/client";
 
