@@ -15,7 +15,7 @@ interface DietApprovalProps {
 
 const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, dietStatus }) => {
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6" data-testid="diet-generate-approval">
+    <div className="w-full max-w-3xl mx-auto space-y-6 mb-4" data-testid="diet-generate-approval">
       <Card>
         <CardHeader>
           <CardTitle>

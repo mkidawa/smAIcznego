@@ -1,7 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import DietGenerateView from "../../modules/diet/generation/components/DietGenerateView";
-import { Toaster } from "@/components/ui/sonner";
 
 const acceptedTerms = Astro.locals.user?.profile?.terms_accepted;
 
@@ -12,5 +11,4 @@ if (!acceptedTerms) {
 
 <Layout>
   <DietGenerateView client:load />
-  <Toaster client:load />
 </Layout>

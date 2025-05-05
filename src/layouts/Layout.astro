@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { ViewTransitions } from "astro:transitions";
 import Navbar from "../components/Navbar";
+import { Toaster } from "@/components/ui/sonner";
 ---
 
 <!doctype html>
@@ -20,6 +21,7 @@ import Navbar from "../components/Navbar";
     <main class="flex flex-col items-center justify-center min-h-[calc(100vh-65px)]">
       <slot />
     </main>
+    <Toaster client:load />
   </body>
 </html>
 

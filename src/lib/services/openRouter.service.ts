@@ -1,7 +1,6 @@
 import type { OpenRouterResponse, OpenRouterRequest } from "@/modules/openRouter/openRouter.types";
 import { Logger } from "../logger";
-
-const openRouterApiKey = import.meta.env.OPENROUTER_API_KEY;
+import { OPENROUTER_API_KEY } from "astro:env/server";
 
 export class OpenRouterService {
   private readonly _apiEndpoint: string;
@@ -19,7 +18,7 @@ export class OpenRouterService {
   };
 
   constructor(systemMessage?: string, modelName?: string, modelParameters?: { temperature: number; top_p: number }) {
-    this._apiKey = openRouterApiKey;
+    this._apiKey = OPENROUTER_API_KEY;
     this._apiEndpoint = "https://openrouter.ai/api/v1";
 
     // Initialize with parameters or default values

@@ -65,7 +65,7 @@ const DietForm: React.FC<DietFormProps> = ({ onSubmit, isLoading }) => {
   });
 
   return (
-    <form onSubmit={formsMethods.handleSubmit(onSubmit)} className="space-y-4" data-testid="diet-generate-form">
+    <form onSubmit={formsMethods.handleSubmit(onSubmit)} className="space-y-4 mb-4" data-testid="diet-generate-form">
       <div>
         <label htmlFor="number_of_days" className="block text-sm font-medium text-gray-700">
           Liczba dni

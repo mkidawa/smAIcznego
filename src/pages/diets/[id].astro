@@ -1,5 +1,4 @@
 ---
-import { Toaster } from "@/components/ui/sonner";
 import Layout from "@/layouts/Layout.astro";
 import { DietDetailsView } from "@/modules/diet/dietaryPlan/components/DietDetailsView";
 
@@ -24,5 +23,4 @@ if (!acceptedTerms) {
 
 <Layout>
   <DietDetailsView client:load dietId={dietId} />
-  <Toaster client:load />
 </Layout>
