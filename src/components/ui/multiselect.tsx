@@ -71,14 +71,14 @@ export function Multiselect({
           );
         })}
         <Select open={isOpen} onOpenChange={setIsOpen} value="" onValueChange={handleSelect} disabled={disabled}>
-          <SelectTrigger className="h-auto min-w-[120px] border-0 bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0">
+          <SelectTrigger className="h-auto min-w-[120px] border-0 bg-transparent p-0 shadow-none hover:bg-transparent focus-visible:ring-0 cursor-pointer">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
             {options
               .filter((option) => !value.includes(option.value))
               .map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className="cursor-pointer">
                   {option.label}
                 </SelectItem>
               ))}
