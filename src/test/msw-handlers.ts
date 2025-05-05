@@ -1,4 +1,3 @@
-import type { Diet, MealItem } from "@/modules/diet/diet.types";
 import { http, HttpResponse } from "msw";
 
 // Przykładowa odpowiedź API
@@ -18,7 +17,7 @@ const exampleRecipes = [
 ];
 
 // Przykładowe diety
-const exampleDiets: Diet[] = [
+const exampleDiets = [
   {
     id: 1,
     number_of_days: 7,
@@ -45,7 +44,7 @@ const exampleDiets: Diet[] = [
 const exampleShoppingList: string[] = ["mąka", "jajka", "ziemniaki", "twaróg", "cebula"];
 
 // Przykładowe posiłki dla diety
-const exampleMeals: MealItem[] = [
+const exampleMeals = [
   {
     id: 1,
     day: 0,
