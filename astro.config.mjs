@@ -20,4 +20,5 @@ export default defineConfig({
   },
   integrations: [react()],
   adapter: cloudflare(),
+  experimental: { session: true },
 });
