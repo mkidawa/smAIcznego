@@ -207,10 +207,12 @@ Poniżej zrzuty ekranu prezentujące kluczowe funkcjonalności aplikacji.
 
 #### Rejestracja
 
+Zdjęcie Jane T D.: [link](https://www.pexels.com/photo/fruit-salad-in-white-ceramic-bowl-1105166/)
 ![Ekran rejestracji](./docs/screenshots/register.png)
 
 #### Logowanie
 
+Zdjęcie Foodie Factor: [link](https://www.pexels.com/photo/pastry-and-boiled-egg-on-plate-566566/)
 ![Ekran logowania](./docs/screenshots/login.png)
 
 ### Główne ekrany
