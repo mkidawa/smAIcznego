@@ -4,6 +4,12 @@ import { GenerationService } from "@/lib/services/generation.service";
 import { errorHandler } from "@/middleware/error-handler";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 const createGenerationSchema = z.object({
   number_of_days: z.number().min(1).max(14),
   calories_per_day: z.number().positive(),
@@ -12,6 +18,13 @@ const createGenerationSchema = z.object({
     z.enum(["polish", "italian", "indian", "asian", "vegan", "vegetarian", "gluten-free", "keto", "paleo"])
   ),
 });
+
+export const OPTIONS: APIRoute = () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+};
 
 export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => {
   const body = await request.json();
@@ -29,5 +42,11 @@ export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => 
     headers: request.headers,
   });
 
-  return new Response(JSON.stringify(responsePayload), { status: 202 });
+  return new Response(JSON.stringify(responsePayload), {
+    status: 202,
+    headers: {
+      "Content-Type": "application/json",
+      ...corsHeaders,
+    },
+  });
 });

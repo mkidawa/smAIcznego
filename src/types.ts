@@ -133,7 +133,7 @@ export interface CreateGenerationCommand {
  * DTO odpowiedzi przy tworzeniu rekordu generacji.
  */
 export interface CreateGenerationResponse {
-  generation_id: number;
+  id: number;
   status: GenerationStatus;
 }
 

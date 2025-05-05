@@ -1,14 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { CreateGenerationCommand, CreateGenerationResponse, GenerationResponse } from "../../../../types";
 
-const POLLING_INTERVAL = 2000; // 2 sekundy między zapytaniami
-const MAX_POLLING_TIME = 300000; // 5 minut maksymalnego czasu pollingu
+const PROGRESS_INTERVAL = 100; // Update progress every 100ms
+const MAX_GENERATION_TIME = 120000; // 2 minutes maximum generation time
 
 const useGenerateDiet = (onSuccess: () => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const startTime = useRef<number | null>(null);
   const [generatedDiet, setGeneratedDiet] = useState<GenerationResponse | null>(null);
   const [generationId, setGenerationId] = useState<number | null>(null);
@@ -25,7 +25,24 @@ const useGenerateDiet = (onSuccess: () => void) => {
     window.history.replaceState({}, "", url.toString());
   }, []);
 
-  // Inicjalizacja generationId z URL po zamontowaniu komponentu
+  const stopProgressTracking = useCallback(() => {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
+      progressInterval.current = null;
+    }
+    startTime.current = null;
+  }, []);
+
+  const startProgressTracking = useCallback(() => {
+    startTime.current = Date.now();
+    progressInterval.current = setInterval(() => {
+      const elapsedTime = Date.now() - (startTime.current || Date.now());
+      const estimatedProgress = Math.min(99, (elapsedTime / MAX_GENERATION_TIME) * 100);
+      setProgress(Math.round(estimatedProgress));
+    }, PROGRESS_INTERVAL);
+  }, []);
+
+  // Initialize generationId from URL on component mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -34,64 +51,29 @@ const useGenerateDiet = (onSuccess: () => void) => {
     if (id) {
       const parsedId = parseInt(id, 10);
       setGenerationId(parsedId);
-      setIsLoading(true);
-      startTime.current = Date.now();
-      checkGenerationStatus(parsedId);
-      pollingInterval.current = setInterval(() => checkGenerationStatus(parsedId), POLLING_INTERVAL);
+      // On page refresh with generationId, fetch the generation
+      fetch(`/api/generations/${parsedId}`)
+        .then((response) => response.json())
+        .then((generation: GenerationResponse) => {
+          if (generation.status === "completed" && generation.preview) {
+            setGeneratedDiet(generation);
+            setProgress(100);
+            onSuccess();
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching generation:", error);
+          setError("Error fetching generation");
+        });
     }
-  }, []);
-
-  const stopPolling = useCallback(() => {
-    if (pollingInterval.current) {
-      clearInterval(pollingInterval.current);
-      pollingInterval.current = null;
-    }
-    startTime.current = null;
-  }, []);
-
-  const checkGenerationStatus = async (id: number): Promise<void> => {
-    try {
-      const response = await fetch(`/api/generations/${id}`);
-      if (!response.ok) {
-        stopPolling();
-        setError("Błąd podczas sprawdzania statusu generacji");
-        setIsLoading(false);
-        return;
-      }
-
-      const generation: GenerationResponse = await response.json();
-
-      if (generation.status === "completed" && generation.preview) {
-        setProgress(100);
-        stopPolling();
-        setIsLoading(false);
-        setGeneratedDiet(generation);
-        onSuccess();
-      } else {
-        if (startTime.current && Date.now() - startTime.current > MAX_POLLING_TIME) {
-          stopPolling();
-          setError("Przekroczono maksymalny czas generacji");
-          setIsLoading(false);
-          return;
-        }
-
-        const elapsedTime = Date.now() - (startTime.current || Date.now());
-        const estimatedProgress = Math.min(90, (elapsedTime / MAX_POLLING_TIME) * 100);
-        setProgress(Math.round(estimatedProgress));
-      }
-    } catch (error) {
-      console.error("Błąd podczas sprawdzania statusu:", error);
-      stopPolling();
-      setError("Błąd podczas sprawdzania statusu generacji");
-      setIsLoading(false);
-    }
-  };
+  }, [onSuccess]);
 
   const generateDiet = async (data: CreateGenerationCommand): Promise<CreateGenerationResponse | null> => {
     setIsLoading(true);
     setError("");
     setProgress(0);
-    stopPolling();
+    stopProgressTracking();
+    startProgressTracking();
 
     try {
       const response = await fetch("/api/generations", {
@@ -102,29 +84,34 @@ const useGenerateDiet = (onSuccess: () => void) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setError(errorData.message || "Wystąpił błąd podczas generowania diety");
-        return null;
+        throw new Error(errorData.message || "Error generating diet");
       }
 
-      const generation: CreateGenerationResponse = await response.json();
-      setGenerationId(generation.generation_id);
-      updateUrl(generation.generation_id);
+      const generation: GenerationResponse = await response.json();
+      stopProgressTracking();
+      setProgress(100);
+      setGenerationId(generation.id);
+      updateUrl(generation.id);
+      setIsLoading(false);
+      onSuccess();
 
-      startTime.current = Date.now();
-      pollingInterval.current = setInterval(() => checkGenerationStatus(generation.generation_id), POLLING_INTERVAL);
-
-      return generation;
+      return {
+        id: generation.id,
+        status: generation.status,
+      };
     } catch (error) {
-      console.error("Błąd podczas generowania:", error);
-      setError("Błąd sieciowy");
+      console.error("Error generating:", error);
+      stopProgressTracking();
+      setError(error instanceof Error ? error.message : "Network error");
+      setIsLoading(false);
       return null;
     }
   };
 
-  // Czyszczenie interwału przy odmontowaniu komponentu
+  // Cleanup interval on component unmount
   useEffect(() => {
-    return () => stopPolling();
-  }, [stopPolling]);
+    return () => stopProgressTracking();
+  }, [stopProgressTracking]);
 
   return { generateDiet, isLoading, progress, error, generatedDiet, generationId };
 };

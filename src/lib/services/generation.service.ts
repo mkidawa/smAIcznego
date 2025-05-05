@@ -66,39 +66,37 @@ export class GenerationService {
       throw new ServerError("Failed to create generation log", logError);
     }
 
-    // Trigger the processing endpoint
+    // Process the generation synchronously
     try {
-      const processingUrl = new URL("/api/generations/process", data.requestUrl.origin);
-
-      // Get the authentication token from the original request headers
-      const authToken = data.headers.get("Cookie") || "";
-
-      fetch(processingUrl.toString(), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: authToken, // Forward the authentication cookie
-        },
-        credentials: "include", // Important for cookie forwarding
-        body: JSON.stringify({
-          generation_id: generation.id,
-          params: {
-            calories_per_day: data.calories_per_day,
-            number_of_days: data.number_of_days,
-            preferences: data.preferred_cuisines,
-            meals_per_day: data.meals_per_day,
-          },
-        }),
-      }).catch((error) => {
-        this.logger.error("Failed to trigger processing endpoint", error as Error, { generationId: generation.id });
+      await this.processGeneration(generation.id, {
+        calories_per_day: data.calories_per_day,
+        number_of_days: data.number_of_days,
+        preferences: data.preferred_cuisines,
+        meals_per_day: data.meals_per_day,
       });
     } catch (error) {
-      this.logger.error("Failed to trigger processing endpoint", error as Error, { generationId: generation.id });
+      this.logger.error("Failed to process generation", error as Error, { generationId: generation.id });
+      // Update generation status to error
+      await this.supabase
+        .from("generations")
+        .update({
+          status: "error",
+          metadata: { error: error instanceof Error ? error.message : String(error) },
+        })
+        .eq("id", generation.id);
+
+      // Log error
+      await this.supabase.from("generation_logs").insert({
+        generation_id: generation.id,
+        event_type: "error",
+        message: `Processing error: ${error instanceof Error ? error.message : String(error)}`,
+        created_at: new Date().toISOString(),
+      });
     }
 
     return {
-      generation_id: generation.id,
-      status: "pending",
+      id: generation.id,
+      status: "completed",
     };
   }
 
