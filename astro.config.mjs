@@ -4,6 +4,11 @@ import { defineConfig, envField } from "astro/config";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+import { loadEnv } from "vite";
+import node from "@astrojs/node";
+
+// eslint-disable-next-line no-undef
+const { E2E_ENV } = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,7 +37,11 @@ export default defineConfig({
     enabled: false,
   },
   integrations: [react()],
-  adapter: cloudflare(),
+  adapter: E2E_ENV
+    ? node({
+        mode: "standalone",
+      })
+    : cloudflare(),
   experimental: {
     session: true,
   },

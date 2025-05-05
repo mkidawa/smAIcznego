@@ -1,19 +1,5 @@
-/* astro:ignore */
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-
-// Sprawdzamy czy jesteśmy w środowisku testowym
-// NODE_ENV jest ustawiany na 'test' automatycznie przez większość test runnerów
-const isTestEnvironment = process.env.NODE_ENV === "test" || process.env.VITEST;
-
-// Natychmiastowe przerwanie wykonania kodu w środowisku Astro
-if (typeof import.meta.env !== "undefined" && !isTestEnvironment) {
-  // Jeśli nie jesteśmy w środowisku testowym a w Astro, przerwij wykonanie
-  console.warn("MSW server skipped in Astro environment");
-
-  // Przerwij wykonanie kodu
-  throw new Error("MSW server can only be used in test environment");
-}
 
 // Przykładowa odpowiedź API
 const exampleRecipes = [
@@ -183,8 +169,5 @@ const handlers = [
   }),
 ];
 
-// Konfiguracja serwera MSW - tylko dla środowiska testowego
-export const server = isTestEnvironment ? setupServer(...handlers) : null;
-
-// Eksportujemy handlery osobno, aby można było je użyć w testach
-export { handlers };
+// Konfiguracja serwera MSW
+export const server = setupServer(...handlers);

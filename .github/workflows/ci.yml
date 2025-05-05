@@ -66,6 +66,7 @@ jobs:
       E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      E2E_ENV: "true"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -91,6 +92,7 @@ jobs:
           echo "E2E_USERNAME_ID=$E2E_USERNAME_ID" >> .env.integration
           echo "E2E_USERNAME=$E2E_USERNAME" >> .env.integration
           echo "E2E_PASSWORD=$E2E_PASSWORD" >> .env.integration
+          echo "E2E_ENV=true" >> .env.integration
 
       - name: Run E2E tests
         run: npm run test:e2e
