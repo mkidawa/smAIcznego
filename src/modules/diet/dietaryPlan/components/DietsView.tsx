@@ -18,7 +18,7 @@ export const DietsView = () => {
   }
 
   return (
-    <div data-testid="diets-view" className="container mx-auto py-8">
+    <div data-testid="diets-view" className="container mx-auto py-8 max-w-screen-lg">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Twoje Diety</h1>
         <Button className="cursor-pointer" onClick={() => navigate("/diets/generate")}>
@@ -49,7 +49,7 @@ export const DietsView = () => {
 };
 
 const LoadingState = () => (
-  <div data-testid="loading-state" className="container mx-auto py-8">
+  <div data-testid="loading-state" className="container mx-auto py-8 max-w-screen-lg">
     <div className="flex justify-between items-center mb-8">
       <div className="h-8 w-48 bg-muted animate-pulse rounded" />
       <div className="h-10 w-40 bg-muted animate-pulse rounded" />

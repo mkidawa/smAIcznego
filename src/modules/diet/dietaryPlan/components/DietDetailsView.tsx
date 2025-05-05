@@ -31,7 +31,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
   }
 
   return (
-    <div data-testid="diet-details" className="container mx-auto py-8">
+    <div data-testid="diet-details" className="container mx-auto py-8 max-w-screen-lg">
       <SummaryCard
         numberOfDays={dietDetails.number_of_days}
         caloriesPerDay={dietDetails.calories_per_day}
@@ -68,7 +68,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
 };
 
 const LoadingState = () => (
-  <div data-testid="loading-state" className="container mx-auto py-8 space-y-8">
+  <div data-testid="loading-state" className="container mx-auto py-8 space-y-8 max-w-screen-lg">
     <Card>
       <CardHeader>
         <div className="h-8 w-1/3 bg-muted animate-pulse rounded" />
