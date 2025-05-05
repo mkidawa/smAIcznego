@@ -66,7 +66,7 @@ const useGenerateDiet = (onSuccess: () => void) => {
           setError("Error fetching generation");
         });
     }
-  }, [onSuccess]);
+  }, [generationId]);
 
   const generateDiet = async (data: CreateGenerationCommand): Promise<CreateGenerationResponse | null> => {
     setIsLoading(true);

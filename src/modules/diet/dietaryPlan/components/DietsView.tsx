@@ -4,9 +4,31 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { navigate } from "astro:transitions/client";
 import { CUISINES_MAP } from "@/lib/constants";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useState } from "react";
 
 export const DietsView = () => {
-  const { diets, isLoading, error } = useGetDiets();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Showing 6 items per page for better grid layout
+  const { diets, isLoading, error, pagination } = useGetDiets({
+    page: currentPage,
+    perPage: itemsPerPage,
+  });
+
+  const totalPages = Math.ceil(pagination.total / pagination.perPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (error) {
     toast.error(error);
@@ -18,7 +40,7 @@ export const DietsView = () => {
   }
 
   return (
-    <div data-testid="diets-view" className="container mx-auto py-8 max-w-screen-lg">
+    <div data-testid="diets-view" className="container mx-auto py-8 max-w-screen-lg px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Twoje Diety</h1>
         <Button className="cursor-pointer" onClick={() => navigate("/diets/generate")}>
@@ -29,27 +51,80 @@ export const DietsView = () => {
       {diets.length === 0 ? (
         <EmptyState />
       ) : (
-        <div data-testid="diets-list" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {diets.map((diet) => (
-            <DietCard
-              key={diet.id}
-              id={diet.id}
-              numberOfDays={diet.number_of_days}
-              caloriesPerDay={diet.calories_per_day}
-              startDate={diet.created_at}
-              endDate={diet.end_date}
-              status={diet.status}
-              cuisines={diet.preferred_cuisines}
-            />
-          ))}
-        </div>
+        <>
+          <div data-testid="diets-list" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+            {diets.map((diet) => (
+              <DietCard
+                key={diet.id}
+                id={diet.id}
+                numberOfDays={diet.number_of_days}
+                caloriesPerDay={diet.calories_per_day}
+                startDate={diet.created_at}
+                endDate={diet.end_date}
+                status={diet.status}
+                cuisines={diet.preferred_cuisines}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNumber = index + 1;
+                    // Show first page, current page, last page, and pages around current
+                    if (
+                      pageNumber === 1 ||
+                      pageNumber === totalPages ||
+                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationLink
+                            onClick={() => handlePageChange(pageNumber)}
+                            isActive={currentPage === pageNumber}
+                            className="cursor-pointer"
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
 
 const LoadingState = () => (
-  <div data-testid="loading-state" className="container mx-auto py-8 max-w-screen-lg">
+  <div data-testid="loading-state" className="container mx-auto py-8 max-w-screen-lg px-4">
     <div className="flex justify-between items-center mb-8">
       <div className="h-8 w-48 bg-muted animate-pulse rounded" />
       <div className="h-10 w-40 bg-muted animate-pulse rounded" />
