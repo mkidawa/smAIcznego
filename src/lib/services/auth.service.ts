@@ -54,13 +54,13 @@ export class AuthService {
 
     this.logger.info("User registered successfully", { email });
 
+    // Additional admin instance to bypass RLS
     const supabaseAdmin = createSupabaseAdminInstance({
       cookies: cookies,
       headers: request.headers,
     });
 
     if (authData.user) {
-      // Użyj supabaseAdmin do utworzenia profilu, omijając ograniczenia RLS
       const { error: profileError } = await supabaseAdmin.from("profiles").insert({
         user_id: authData.user.id,
         terms_accepted: false,
@@ -78,20 +78,10 @@ export class AuthService {
     return { user: authData.user };
   }
 
-  async resetPassword({
-    email,
-    url,
-    cookies,
-    request,
-  }: ResetPasswordInput & { url: URL; cookies: AstroCookies; request: Request }) {
+  async resetPassword({ email, url }: ResetPasswordInput & { url: URL }) {
     this.logger.info("Attempting password reset", { email });
 
-    const supabaseAdmin = createSupabaseAdminInstance({
-      cookies: cookies,
-      headers: request.headers,
-    });
-
-    const { error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${url.origin}/new-password`,
     });
 

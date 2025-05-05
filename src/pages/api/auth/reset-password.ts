@@ -3,7 +3,7 @@ import { AuthService } from "@/lib/services/auth.service";
 import { errorHandler } from "@/middleware/error-handler";
 import { ValidationError } from "@/lib/errors/api-error";
 import { resetPasswordSchema } from "@/modules/auth/types/auth.schema";
-import { createSupabaseServerInstance } from "@/db/supabase.client";
+import { createSupabaseAdminInstance } from "@/db/supabase.client";
 
 export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => {
   const rawData = await request.json();
@@ -12,17 +12,15 @@ export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => 
   if (!result.success) {
     throw new ValidationError("Invalid email address", result.error.errors);
   }
-
-  const supabaseClient = createSupabaseServerInstance({
+  const supabaseAdmin = createSupabaseAdminInstance({
     cookies: cookies,
     headers: request.headers,
   });
-  const authService = new AuthService(supabaseClient);
+
+  const authService = new AuthService(supabaseAdmin);
   const response = await authService.resetPassword({
     ...result.data,
     url,
-    cookies,
-    request,
   });
 
   return new Response(JSON.stringify(response), {
