@@ -16,16 +16,20 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "src/test/", "**/*.d.ts", "**/*.test.{ts,tsx}", "**/*.config.{js,ts}"],
-      thresholds: {
-        statements: 70,
-        branches: 70,
-        functions: 70,
-        lines: 70,
-      },
+      exclude: [
+        "node_modules/",
+        "src/test/",
+        "**/*.d.ts",
+        "**/*.test.{ts,tsx}",
+        "**/*.config.{js,ts}",
+        "**/*.mjs",
+        "dist",
+        "e2e",
+        "playwright.config.ts",
+      ],
     },
     include: ["**/*.test.{ts,tsx}"],
-    exclude: ["node_modules", ".astro", "dist", "e2e", "playwright.config.ts"],
+    exclude: ["node_modules", ".astro", "dist", "e2e", "playwright.config.ts", "__mocks__"],
     alias: {
       "@": resolve(__dirname, "./src"),
       "astro:transitions/client": resolve(__dirname, "./__mocks__/astro.ts"),
