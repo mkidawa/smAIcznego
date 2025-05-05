@@ -30,6 +30,7 @@ const DietGenerateView: React.FC = () => {
   } = useGetDiet({ generationId: generatedDiet?.id });
 
   const isLoading = isGenerating || isCreatingDiet || isAddingMeals || isCreatingShoppingList || isGettingDiet;
+  const isApprovalLoading = isCreatingDiet || isAddingMeals || isCreatingShoppingList;
 
   const handleGenerateDiet = async (data: CreateGenerationCommand) => {
     await generateDiet(data);
@@ -110,6 +111,7 @@ const DietGenerateView: React.FC = () => {
           diet={generatedDiet.preview}
           onApprove={handleApprove}
           onReject={handleReject}
+          isLoading={isApprovalLoading}
         />
       )}
     </div>

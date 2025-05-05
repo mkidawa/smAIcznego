@@ -11,9 +11,10 @@ interface DietApprovalProps {
   onApprove: () => void;
   onReject: () => void;
   dietStatus: DietStatus;
+  isLoading: boolean;
 }
 
-const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, dietStatus }) => {
+const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, dietStatus, isLoading }) => {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6 mb-4" data-testid="diet-generate-approval">
       <Card>
@@ -91,11 +92,17 @@ const DietApproval: React.FC<DietApprovalProps> = ({ diet, onApprove, onReject, 
 
       {dietStatus !== "ready" && (
         <div className="flex justify-end space-x-4">
-          <Button onClick={onReject} variant="outline" className="cursor-pointer" data-testid="reject-button">
+          <Button
+            onClick={onReject}
+            variant="outline"
+            className="cursor-pointer"
+            data-testid="reject-button"
+            disabled={isLoading}
+          >
             Odrzuć
           </Button>
-          <Button onClick={onApprove} className="cursor-pointer" data-testid="approve-button">
-            Zatwierdź
+          <Button onClick={onApprove} className="cursor-pointer" data-testid="approve-button" disabled={isLoading}>
+            {isLoading ? "Zatwierdzanie..." : "Zatwierdź"}
           </Button>
         </div>
       )}
