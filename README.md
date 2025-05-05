@@ -12,6 +12,7 @@
 - [Licencja](#licencja)
 - [Testowanie](#testowanie)
 - [Monitorowanie](#monitorowanie)
+- [Screeny Aplikacji](#screeny-aplikacji)
 
 ## Opis Projektu
 
@@ -197,3 +198,33 @@ Skrypt zwraca:
 - Kod wyjścia 1 - jeśli healthcheck nie powiódł się lub wystąpił błąd połączenia
 
 Skrypt można wykorzystać w ramach własnych narzędzi monitorowania lub w połączeniu z systemami CI/CD do weryfikacji poprawności wdrożenia.
+
+## Screeny Aplikacji
+
+Poniżej zrzuty ekranu prezentujące kluczowe funkcjonalności aplikacji.
+
+### Autentykacja
+
+#### Rejestracja
+
+![Ekran rejestracji](register.png)
+
+#### Logowanie
+
+![Ekran logowania](login.png)
+
+### Główne ekrany
+
+#### Generowanie diety
+
+![Ekran generowania diety](diets_generation.png)
+
+#### Panel diet
+
+![Dashboard z dietami](diets_dashboard.png)
+
+### Profil użytkownika
+
+#### Edycja profilu
+
+![Edycja preferencji profilu](profile_edit.png)
