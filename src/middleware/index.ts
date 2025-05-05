@@ -1,6 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
-import { supabaseClient } from "../db/supabase.client";
 import { Logger } from "../lib/logger";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 const logger = Logger.getInstance();
 
@@ -15,15 +15,20 @@ const PUBLIC_PATHS = [
   "/api/auth/reset-password",
 ];
 
-export const onRequest = defineMiddleware(async (context, next) => {
+export const onRequest = defineMiddleware(async ({ locals, request, cookies, url, redirect }, next) => {
   const startTime = Date.now();
   const requestId = crypto.randomUUID();
 
-  // Dodaj supabase do kontekstu
-  context.locals.supabase = supabaseClient;
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
+
+  // Attach supabase client to locals
+  locals.supabase = supabase;
 
   // Sprawdź czy ścieżka jest publiczna
-  if (PUBLIC_PATHS.includes(context.url.pathname)) {
+  if (PUBLIC_PATHS.includes(url.pathname)) {
     return next();
   }
 
@@ -31,17 +36,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const {
     data: { user },
     error,
-  } = await supabaseClient.auth.getUser();
+  } = await supabase.auth.getUser();
 
   if (error || !user) {
     logger.info("Unauthorized access attempt", {
       requestId,
-      path: context.url.pathname,
+      path: url.pathname,
     });
-    return context.redirect("/login");
+    return redirect("/login");
   }
 
-  const { data: profile, error: profileError } = await supabaseClient
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user.id)
@@ -52,21 +57,23 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   // Dodaj dane użytkownika do kontekstu
-  context.locals.user = {
-    id: user.id,
-    email: user.email ?? null,
-    profile,
-  };
+  if (user) {
+    locals.user = {
+      id: user.id,
+      email: user.email ?? null,
+      profile,
+    };
+  }
 
   // Log request start
   logger.info("Started processing HTTP request", {
     requestId,
-    method: context.request.method,
-    url: context.url.pathname,
-    query: Object.fromEntries(context.url.searchParams),
+    method: request.method,
+    url: url.pathname,
+    query: Object.fromEntries(url.searchParams),
     headers: {
-      "content-type": context.request.headers.get("content-type"),
-      "user-agent": context.request.headers.get("user-agent"),
+      "content-type": request.headers.get("content-type"),
+      "user-agent": request.headers.get("user-agent"),
     },
   });
 

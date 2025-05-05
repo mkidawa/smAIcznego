@@ -3,7 +3,6 @@ import { defineConfig } from "astro/config";
 
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-
 import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
@@ -12,22 +11,19 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  env: {
+    schema: {
+      SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
+      SUPABASE_PUBLIC_KEY: envField.string({ context: "server", access: "secret" }),
+      SUPABASE_SERVICE_ROLE_KEY: envField.string({ context: "server", access: "secret" }),
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: import.meta.env.PROD
-        ? {
-            "react-dom/server": "react-dom/server.edge",
-          }
-        : undefined,
-    },
   },
   devToolbar: {
     enabled: false,
   },
   integrations: [react()],
-  adapter: cloudflare({
-    sessionKVBindingName: "SESSION",
-  }),
-  experimental: { session: true },
+  adapter: cloudflare(),
 });
