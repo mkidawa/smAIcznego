@@ -82,8 +82,7 @@ export class AuthService {
     this.logger.info("Attempting password reset", { email });
 
     const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      // TODO: change to production url
-      redirectTo: `http://localhost:3000/new-password`,
+      redirectTo: `https://smaicznego.pages.dev/new-password`,
     });
 
     if (error) {
