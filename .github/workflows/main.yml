@@ -7,17 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-build-deploy:
-    name: Test, Build and Deploy
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,50 +26,64 @@ jobs:
       - name: Linting
         run: npm run lint
 
-      - name: Unit and integration tests
-        run: npm run test
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+  unit-tests:
+    name: Unit Tests
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # - name: Check test coverage
-      #   run: npm run test:coverage
-      #   env:
-      #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      #     SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      #     SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      #     OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Create .env.test file
-        run: |
-          echo "SUPABASE_URL=$SUPABASE_URL" > .env.test
-          echo "SUPABASE_KEY=$SUPABASE_KEY" >> .env.test
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env.test
-          echo "OPENROUTER_API_KEY=$OPENROUTER_API_KEY" >> .env.test
-          echo "E2E_USERNAME_ID=$E2E_USERNAME_ID" >> .env.test
-          echo "E2E_USERNAME=$E2E_USERNAME" >> .env.test
-          echo "E2E_PASSWORD=$E2E_PASSWORD" >> .env.test
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
 
-      - name: E2E Tests
-        run: npm run test:e2e
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-coverage
+          path: coverage/
+          retention-days: 5
 
-      - name: Production build
+  build-and-deploy:
+    name: Build and Deploy
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
         run: npm run build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
