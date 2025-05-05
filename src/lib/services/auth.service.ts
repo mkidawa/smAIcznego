@@ -94,6 +94,31 @@ export class AuthService {
     return { message: "Password reset email sent" };
   }
 
+  async verifyResetToken(tokenHash: string) {
+    this.logger.info("Verifying reset token");
+
+    if (!tokenHash) {
+      this.logger.error("Token hash is missing");
+      throw new ApiError("Token hash is required", 400);
+    }
+
+    const {
+      error,
+      data: { user },
+    } = await this.supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "recovery",
+    });
+
+    if (error) {
+      this.logger.error("Error verifying reset token", error);
+      throw new ApiError("Invalid or expired token", 400, error.message);
+    }
+
+    this.logger.info("Reset token verified successfully", { userId: user?.id });
+    return { user };
+  }
+
   async updatePassword(input: UpdatePasswordInput) {
     this.logger.info("Attempting to update password");
 

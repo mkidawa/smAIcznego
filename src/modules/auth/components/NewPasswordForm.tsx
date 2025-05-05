@@ -13,7 +13,7 @@ import { updatePasswordSchema } from "@/modules/auth/types/auth.schema";
 type FormData = z.infer<typeof updatePasswordSchema>;
 
 const NewPasswordForm: React.FC = () => {
-  const { updatePassword, isLoading, error, success } = useNewPassword();
+  const { updatePassword, isLoading, error, success, isTokenValid, isTokenChecking } = useNewPassword();
 
   const formsMethods = useForm<FormData>({
     resolver: zodResolver(updatePasswordSchema),
@@ -79,7 +79,11 @@ const NewPasswordForm: React.FC = () => {
       </div>
 
       <div className="pt-4">
-        <Button type="submit" disabled={isLoading} className="w-full cursor-pointer">
+        <Button
+          type="submit"
+          disabled={isLoading || !isTokenValid || isTokenChecking}
+          className="w-full cursor-pointer"
+        >
           {isLoading ? "Zapisywanie..." : "Zmień hasło"}
         </Button>
       </div>
