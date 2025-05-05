@@ -6,6 +6,11 @@ import type { Database } from "../../db/database.types";
 import { Logger } from "../logger";
 import { NotFoundError, ServerError, UnauthorizedError } from "../errors/api-error";
 
+type CreateGenerationWithRequestUrl = CreateGenerationCommand & {
+  requestUrl: URL;
+  headers: Headers;
+};
+
 export class GenerationService {
   private readonly logger = Logger.getInstance();
   private userId: string | undefined;
@@ -26,7 +31,7 @@ export class GenerationService {
     return this.userId;
   }
 
-  async createGeneration(data: CreateGenerationCommand): Promise<CreateGenerationResponse> {
+  async createGeneration(data: CreateGenerationWithRequestUrl): Promise<CreateGenerationResponse> {
     const userId = await this.initializeUserId();
     this.logger.info("Starting generation creation", { userId });
 
@@ -61,82 +66,128 @@ export class GenerationService {
       throw new ServerError("Failed to create generation log", logError);
     }
 
+    // Trigger the processing endpoint
     try {
-      // Initialize OpenRouterService
-      const openRouter = new OpenRouterService();
-      await openRouter.initialize();
+      const processingUrl = new URL("/api/generations/process", data.requestUrl.origin);
 
-      // Prepare parameters for diet generation
-      const dietParams = {
-        calories_per_day: data.calories_per_day,
-        number_of_days: data.number_of_days,
-        preferences: data.preferred_cuisines,
-        meals_per_day: data.meals_per_day,
-      };
+      // Get the authentication token from the original request headers
+      const authToken = data.headers.get("Cookie") || "";
 
-      this.logger.info("Starting asynchronous diet generation", {
-        generationId: generation.id,
-        params: dietParams,
+      fetch(processingUrl.toString(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: authToken, // Forward the authentication cookie
+        },
+        credentials: "include", // Important for cookie forwarding
+        body: JSON.stringify({
+          generation_id: generation.id,
+          params: {
+            calories_per_day: data.calories_per_day,
+            number_of_days: data.number_of_days,
+            preferences: data.preferred_cuisines,
+            meals_per_day: data.meals_per_day,
+          },
+        }),
+      }).catch((error) => {
+        this.logger.error("Failed to trigger processing endpoint", error as Error, { generationId: generation.id });
       });
-
-      // Asynchronous diet generation call
-      openRouter
-        .generateDietPlan(dietParams)
-        .then(async (response) => {
-          // Update generation status to completed and save response in metadata
-          const { error: updateError } = await this.supabase
-            .from("generations")
-            .update({
-              status: "completed",
-              metadata: response,
-            })
-            .eq("id", generation.id);
-
-          if (updateError) {
-            this.logger.error("Failed to update generation status", updateError, {
-              generationId: generation.id,
-            });
-            return;
-          }
-
-          // Log success
-          await this.supabase.from("generation_logs").insert({
-            generation_id: generation.id,
-            event_type: "response",
-            message: "Diet generation completed successfully",
-            created_at: new Date().toISOString(),
-          });
-
-          this.logger.info("Diet generation completed successfully", { generationId: generation.id });
-        })
-        .catch(async (error) => {
-          // Log error
-          await this.supabase.from("generation_logs").insert({
-            generation_id: generation.id,
-            event_type: "error",
-            message: `Diet generation error: ${error.message}`,
-            created_at: new Date().toISOString(),
-          });
-
-          this.logger.error("Diet generation failed", error, { generationId: generation.id });
-        });
     } catch (error) {
-      // Log initialization error
-      await this.supabase.from("generation_logs").insert({
-        generation_id: generation.id,
-        event_type: "error",
-        message: `OpenRouter initialization error: ${error instanceof Error ? error.message : String(error)}`,
-        created_at: new Date().toISOString(),
-      });
-
-      this.logger.error("OpenRouter initialization failed", error as Error, { generationId: generation.id });
-      throw new ServerError("Failed to initialize OpenRouter service", error);
+      this.logger.error("Failed to trigger processing endpoint", error as Error, { generationId: generation.id });
     }
 
     return {
       generation_id: generation.id,
       status: "pending",
     };
+  }
+
+  async processGeneration(
+    generationId: number,
+    params: {
+      calories_per_day: number;
+      number_of_days: number;
+      preferences?: string[];
+      meals_per_day: number;
+    }
+  ): Promise<void> {
+    this.logger.info("Starting generation processing", { generationId });
+
+    try {
+      // Initialize OpenRouterService
+      const openRouter = new OpenRouterService();
+      await openRouter.initialize();
+
+      this.logger.info("Starting diet generation", {
+        generationId,
+        params,
+      });
+
+      // Execute the diet plan generation
+      try {
+        const response = await openRouter.generateDietPlan(params);
+
+        // Update generation status to completed and save response in metadata
+        const { error: updateError } = await this.supabase
+          .from("generations")
+          .update({
+            status: "completed",
+            metadata: response,
+          })
+          .eq("id", generationId);
+
+        if (updateError) {
+          this.logger.error("Failed to update generation status", updateError, {
+            generationId,
+          });
+          throw updateError;
+        }
+
+        // Log success
+        await this.supabase.from("generation_logs").insert({
+          generation_id: generationId,
+          event_type: "response",
+          message: "Diet generation completed successfully",
+          created_at: new Date().toISOString(),
+        });
+
+        this.logger.info("Diet generation completed successfully", { generationId });
+      } catch (error) {
+        // Update generation status to error
+        await this.supabase
+          .from("generations")
+          .update({
+            status: "error",
+            metadata: { error: error instanceof Error ? error.message : String(error) },
+          })
+          .eq("id", generationId);
+
+        // Log error
+        await this.supabase.from("generation_logs").insert({
+          generation_id: generationId,
+          event_type: "error",
+          message: `Diet generation error: ${error instanceof Error ? error.message : String(error)}`,
+          created_at: new Date().toISOString(),
+        });
+
+        this.logger.error("Diet generation failed", error instanceof Error ? error : new Error(String(error)), {
+          generationId,
+        });
+      }
+    } catch (error) {
+      // Log initialization error
+      await this.supabase.from("generation_logs").insert({
+        generation_id: generationId,
+        event_type: "error",
+        message: `OpenRouter initialization error: ${error instanceof Error ? error.message : String(error)}`,
+        created_at: new Date().toISOString(),
+      });
+
+      this.logger.error("OpenRouter initialization failed", error instanceof Error ? error : new Error(String(error)), {
+        generationId,
+      });
+      throw new ServerError("Failed to initialize OpenRouter service", error);
+    }
   }
 
   async getGeneration(id: number): Promise<GenerationResponse> {

@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { GenerationService } from "@/lib/services/generation.service";
 import { errorHandler } from "@/middleware/error-handler";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 const createGenerationSchema = z.object({
   number_of_days: z.number().min(1).max(14),
@@ -12,12 +13,21 @@ const createGenerationSchema = z.object({
   ),
 });
 
-export const POST: APIRoute = errorHandler(async ({ request, locals }) => {
+export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => {
   const body = await request.json();
   const data = createGenerationSchema.parse(body);
 
-  const generationService = new GenerationService(locals.supabase);
-  const responsePayload = await generationService.createGeneration(data);
+  const supabaseClient = createSupabaseServerInstance({
+    cookies: cookies,
+    headers: request.headers,
+  });
+
+  const generationService = new GenerationService(supabaseClient);
+  const responsePayload = await generationService.createGeneration({
+    ...data,
+    requestUrl: url,
+    headers: request.headers,
+  });
 
   return new Response(JSON.stringify(responsePayload), { status: 202 });
 });
