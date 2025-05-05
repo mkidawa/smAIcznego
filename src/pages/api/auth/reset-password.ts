@@ -5,7 +5,7 @@ import { ValidationError } from "@/lib/errors/api-error";
 import { resetPasswordSchema } from "@/modules/auth/types/auth.schema";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 
-export const POST: APIRoute = errorHandler(async ({ request, cookies }) => {
+export const POST: APIRoute = errorHandler(async ({ request, cookies, url }) => {
   const rawData = await request.json();
   const result = resetPasswordSchema.safeParse(rawData);
 
@@ -18,7 +18,12 @@ export const POST: APIRoute = errorHandler(async ({ request, cookies }) => {
     headers: request.headers,
   });
   const authService = new AuthService(supabaseClient);
-  const response = await authService.resetPassword(result.data);
+  const response = await authService.resetPassword({
+    ...result.data,
+    url,
+    cookies,
+    request,
+  });
 
   return new Response(JSON.stringify(response), {
     status: 200,

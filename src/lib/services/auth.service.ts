@@ -78,11 +78,21 @@ export class AuthService {
     return { user: authData.user };
   }
 
-  async resetPassword({ email }: ResetPasswordInput) {
+  async resetPassword({
+    email,
+    url,
+    cookies,
+    request,
+  }: ResetPasswordInput & { url: URL; cookies: AstroCookies; request: Request }) {
     this.logger.info("Attempting password reset", { email });
 
-    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `https://smaicznego.pages.dev/new-password`,
+    const supabaseAdmin = createSupabaseAdminInstance({
+      cookies: cookies,
+      headers: request.headers,
+    });
+
+    const { error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+      redirectTo: `${url.origin}/new-password`,
     });
 
     if (error) {
