@@ -92,14 +92,10 @@ Projekt skupia się na realizacji następujących funkcjonalności:
 - **Lista zakupów:** Automatyczne generowanie statycznej listy zakupów na podstawie wygenerowanego planu diety.
 - **Wyświetlanie diety:** Prezentacja pełnego planu diety wraz z harmonogramem posiłków oraz możliwością podglądu szczegółowych przepisów.
 
-\_Należy zauważyć, że w ramach MVP:
+Należy zauważyć, że w ramach MVP:
 
 - Nie implementujemy systemu rekomendacji diet.
-- Lista zakupów pozostaje statyczna bez możliwości edycji.\_
-
-## Status Projektu
-
-Projekt znajduje się w fazie MVP. Główne funkcjonalności są wdrażane i testowane. Dalszy rozwój planowany jest po uzyskaniu opinii użytkowników.
+- Lista zakupów pozostaje statyczna bez możliwości edycji.
 
 ## CI/CD
 
