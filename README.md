@@ -49,7 +49,7 @@ Aplikacja **smaAIcznego** to MVP mające na celu pomoc użytkownikom w wyborze i
 **CI/CD i Hosting:**
 
 - Github Actions
-- DigitalOcean
+- Cloudflare Pages
 
 ## Uruchomienie Lokalnie
 
