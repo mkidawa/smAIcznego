@@ -1,11 +1,19 @@
 ---
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 import GuestLayout from "@/layouts/GuestLayout.astro";
 import RegisterForm from "@/modules/auth/components/RegisterForm";
 
 // Check if user is already logged in
+const supabase = createSupabaseServerInstance({
+  cookies: Astro.cookies,
+  headers: Astro.request.headers,
+});
+
 const {
   data: { user },
-} = await Astro.locals.supabase.auth.getUser();
+} = await supabase.auth.getUser();
+
+// If user is already logged in, redirect to home page
 if (user) {
   return Astro.redirect("/diets");
 }

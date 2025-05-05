@@ -14,7 +14,7 @@ export default defineConfig({
   env: {
     schema: {
       SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
-      SUPABASE_PUBLIC_KEY: envField.string({ context: "server", access: "secret" }),
+      SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
       SUPABASE_SERVICE_ROLE_KEY: envField.string({ context: "server", access: "secret" }),
     },
   },
@@ -26,4 +26,7 @@ export default defineConfig({
   },
   integrations: [react()],
   adapter: cloudflare(),
+  experimental: {
+    session: true,
+  },
 });
