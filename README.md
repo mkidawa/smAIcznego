@@ -207,24 +207,24 @@ Poniżej zrzuty ekranu prezentujące kluczowe funkcjonalności aplikacji.
 
 #### Rejestracja
 
-![Ekran rejestracji](register.png)
+![Ekran rejestracji](./docs/screenshots/register.png)
 
 #### Logowanie
 
-![Ekran logowania](login.png)
+![Ekran logowania](./docs/screenshots/login.png)
 
 ### Główne ekrany
 
 #### Generowanie diety
 
-![Ekran generowania diety](diets_generation.png)
+![Ekran generowania diety](./docs/screenshots/diets_generation.png)
 
 #### Panel diet
 
-![Dashboard z dietami](diets_dashboard.png)
+![Dashboard z dietami](./docs/screenshots/diets_dashboard.png)
 
 ### Profil użytkownika
 
 #### Edycja profilu
 
-![Edycja preferencji profilu](profile_edit.png)
+![Edycja preferencji profilu](./docs/screenshots/profile_edit.png)
