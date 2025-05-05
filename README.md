@@ -66,14 +66,21 @@ Aplikacja **smaAIcznego** to MVP mające na celu pomoc użytkownikom w wyborze i
 ## Dostępne Skrypty
 
 - `npm run dev` – Uruchamia serwer developerski Astro.
+- `npm run dev:e2e` – Uruchamia serwer developerski Astro w trybie testowym.
 - `npm run build` – Buduje aplikację do środowiska produkcyjnego.
 - `npm run preview` – Podgląd zbudowanej aplikacji.
+- `npm run preview:e2e` – Podgląd zbudowanej aplikacji w trybie testowym.
+- `npm run astro` – Uruchamia polecenia CLI Astro.
 - `npm run lint` – Sprawdza kod za pomocą ESLint.
 - `npm run lint:fix` – Automatycznie naprawia wykryte problemy w kodzie.
 - `npm run format` – Formatuje kod przy użyciu Prettier.
-- `npm run test:unit` – Uruchamia testy jednostkowe z Vitest.
-- `npm run test:e2e` – Uruchamia testy end-to-end z Playwright.
+- `npm run test` – Uruchamia testy jednostkowe z Vitest (jednokrotnie).
+- `npm run test:watch` – Uruchamia testy w trybie watch (ciągłym).
+- `npm run test:ui` – Uruchamia testy w interaktywnym interfejsie graficznym.
 - `npm run test:coverage` – Generuje raport pokrycia kodu testami.
+- `npm run test:e2e` – Uruchamia testy end-to-end z Playwright.
+- `npm run test:e2e:ui` – Uruchamia testy e2e w interfejsie graficznym.
+- `npm run test:e2e:codegen` – Uruchamia generator testów e2e.
 
 ## Zakres Projektu
 
