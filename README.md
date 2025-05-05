@@ -11,6 +11,7 @@
 - [CI/CD](#cicd)
 - [Licencja](#licencja)
 - [Testowanie](#testowanie)
+- [Monitorowanie](#monitorowanie)
 
 ## Opis Projektu
 
@@ -166,3 +167,33 @@ Struktura testów e2e:
 - Testy znajdują się w katalogu `e2e`
 - Wykorzystujemy wzorzec Page Object Model do organizacji kodu testów
 - Wykonujemy testy tylko na przeglądarce Chrome zgodnie z wymaganiami projektu
+
+## Monitorowanie
+
+Aplikacja posiada endpoint healthcheck służący do monitorowania stanu usługi.
+
+### Endpoint Healthcheck
+
+Endpoint `/api/healthcheck` zwraca informacje o aktualnym stanie aplikacji:
+
+- Status `200 OK` z odpowiedzią `{ status: "healthy", message: "Service is running" }` - aplikacja działa poprawnie
+- Inne kody statusu HTTP - aplikacja może wymagać uwagi
+
+### Skrypt Test-Healthcheck
+
+W projekcie dostępny jest skrypt PowerShell do testowania endpointu healthcheck:
+
+```bash
+# Uruchomienie z domyślnym URL (http://localhost:3000/api/healthcheck)
+./scripts/test-healthcheck.ps1
+
+# Uruchomienie z niestandardowym hostem
+$env:HOST_URL="https://example.com"; ./scripts/test-healthcheck.ps1
+```
+
+Skrypt zwraca:
+
+- Kod wyjścia 0 - jeśli healthcheck przeszedł pomyślnie
+- Kod wyjścia 1 - jeśli healthcheck nie powiódł się lub wystąpił błąd połączenia
+
+Skrypt można wykorzystać w ramach własnych narzędzi monitorowania lub w połączeniu z systemami CI/CD do weryfikacji poprawności wdrożenia.
