@@ -9,7 +9,13 @@ import {
   type UpdatePasswordInput,
 } from "@/modules/auth/types/auth.schema";
 import type { Database } from "@/db/database.types";
-import { supabaseAdmin } from "@/db/supabase.admin";
+import type { AstroCookies } from "astro";
+import { createSupabaseAdminInstance } from "@/db/supabase.client";
+
+interface RegisterPayload extends RegisterInput {
+  cookies: AstroCookies;
+  request: Request;
+}
 
 export class AuthService {
   private readonly logger = Logger.getInstance();
@@ -33,7 +39,7 @@ export class AuthService {
     return { user: authData.user };
   }
 
-  async register({ email, password }: RegisterInput) {
+  async register({ email, password, cookies, request }: RegisterPayload) {
     this.logger.info("Attempting user registration", { email });
 
     const { data: authData, error } = await this.supabase.auth.signUp({
@@ -47,6 +53,11 @@ export class AuthService {
     }
 
     this.logger.info("User registered successfully", { email });
+
+    const supabaseAdmin = createSupabaseAdminInstance({
+      cookies: cookies,
+      headers: request.headers,
+    });
 
     if (authData.user) {
       // Użyj supabaseAdmin do utworzenia profilu, omijając ograniczenia RLS

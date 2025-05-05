@@ -16,7 +16,11 @@ export const POST: APIRoute = errorHandler(async ({ request, cookies }) => {
     headers: request.headers,
   });
   const authService = new AuthService(supabaseClient);
-  const response = await authService.register(result.data);
+  const response = await authService.register({
+    ...result.data,
+    cookies: cookies,
+    request: request,
+  });
 
   return new Response(JSON.stringify(response), {
     status: 200,
