@@ -9,6 +9,7 @@ export function useProfile() {
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [isFetched, setIsFetched] = useState(false);
 
   const fetchProfile = async () => {
     setIsLoading(true);
@@ -23,6 +24,7 @@ export function useProfile() {
 
       const data = await response.json();
       setProfile(data);
+      setIsFetched(true);
       return data;
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch profile"));
@@ -73,5 +75,6 @@ export function useProfile() {
     error,
     refresh: fetchProfile,
     updateProfile,
+    isFetched,
   };
 }

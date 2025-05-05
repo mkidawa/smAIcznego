@@ -8,9 +8,9 @@ import { Loader2 } from "lucide-react";
 
 export const ProfileView = () => {
   const [editMode, setEditMode] = useState(false);
-  const { profile, isLoading, error, refresh, updateProfile } = useProfile();
+  const { profile, isLoading, error, refresh, updateProfile, isFetched } = useProfile();
 
-  if (isLoading) {
+  if (isLoading || !isFetched) {
     return <ProfileLoader />;
   }
 
