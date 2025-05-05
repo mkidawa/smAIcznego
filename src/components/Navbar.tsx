@@ -10,23 +10,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLogout } from "@/modules/auth/hooks/useLogout";
 
 const Navbar = () => {
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Błąd podczas wylogowywania");
-      }
-
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Błąd wylogowania:", error);
-    }
-  };
+  const { logout } = useLogout();
 
   return (
     <div className="border-b">
@@ -56,7 +43,7 @@ const Navbar = () => {
         <Button
           data-testid="logout-button"
           variant="ghost"
-          onClick={handleLogout}
+          onClick={logout}
           className="text-red-500 hover:text-red-700 hover:bg-red-100 cursor-pointer"
         >
           Wyloguj
