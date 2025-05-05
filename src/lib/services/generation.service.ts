@@ -31,6 +31,24 @@ export class GenerationService {
     return this.userId;
   }
 
+  private async getUserAllergies(): Promise<string[]> {
+    const userId = await this.initializeUserId();
+    this.logger.info("Fetching user allergies", { userId });
+
+    const { data: profile, error } = await this.supabase
+      .from("profiles")
+      .select("allergies")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      this.logger.error("Failed to fetch user allergies", error, { userId });
+      throw new ServerError("Failed to fetch user allergies", error);
+    }
+
+    return profile?.allergies || [];
+  }
+
   async createGeneration(data: CreateGenerationWithRequestUrl): Promise<CreateGenerationResponse> {
     const userId = await this.initializeUserId();
     this.logger.info("Starting generation creation", { userId });
@@ -112,6 +130,10 @@ export class GenerationService {
     this.logger.info("Starting generation processing", { generationId });
 
     try {
+      // Fetch user allergies
+      const allergies = await this.getUserAllergies();
+      this.logger.info("Retrieved user allergies", { generationId, allergiesCount: allergies.length });
+
       // Initialize OpenRouterService
       const openRouter = new OpenRouterService();
       await openRouter.initialize();
@@ -119,11 +141,15 @@ export class GenerationService {
       this.logger.info("Starting diet generation", {
         generationId,
         params,
+        allergiesCount: allergies.length,
       });
 
-      // Execute the diet plan generation
+      // Execute the diet plan generation with allergies
       try {
-        const response = await openRouter.generateDietPlan(params);
+        const response = await openRouter.generateDietPlan({
+          ...params,
+          allergies,
+        });
 
         // Update generation status to completed and save response in metadata
         const { error: updateError } = await this.supabase

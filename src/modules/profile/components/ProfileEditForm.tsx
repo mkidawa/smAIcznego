@@ -103,7 +103,7 @@ export function ProfileEditForm({ profile, onCancel, onSubmit }: ProfileEditForm
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto mt-8">
+    <Card className="w-full max-w-lg mx-auto my-8">
       <CardHeader className="pb-4">
         <CardTitle className="text-2xl font-bold">Edytuj profil</CardTitle>
         <CardDescription>Zmień swoje dane osobowe i preferencje dietetyczne</CardDescription>
@@ -226,7 +226,11 @@ export function ProfileEditForm({ profile, onCancel, onSubmit }: ProfileEditForm
                                   (a) =>
                                     !field.value?.includes(a) && a.toLowerCase().includes(allergyInput.toLowerCase())
                                 ).map((allergy) => (
-                                  <CommandItem key={allergy} onSelect={() => handleAddAllergy(allergy)}>
+                                  <CommandItem
+                                    className="cursor-pointer"
+                                    key={allergy}
+                                    onSelect={() => handleAddAllergy(allergy)}
+                                  >
                                     <Check
                                       className={`mr-2 h-4 w-4 cursor-pointer ${
                                         field.value?.includes(allergy) ? "opacity-100" : "opacity-0"
