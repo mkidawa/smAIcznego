@@ -8,6 +8,7 @@
 - [Dostępne Skrypty](#dostępne-skrypty)
 - [Zakres Projektu](#zakres-projektu)
 - [Status Projektu](#status-projektu)
+- [CI/CD](#cicd)
 - [Licencja](#licencja)
 - [Testowanie](#testowanie)
 
@@ -99,6 +100,35 @@ Projekt skupia się na realizacji następujących funkcjonalności:
 ## Status Projektu
 
 Projekt znajduje się w fazie MVP. Główne funkcjonalności są wdrażane i testowane. Dalszy rozwój planowany jest po uzyskaniu opinii użytkowników.
+
+## CI/CD
+
+Projekt wykorzystuje GitHub Actions do automatyzacji procesów CI/CD:
+
+### Workflow `ci.yml`
+
+Uruchamiany przy każdym push na branch `main` oraz manualnie:
+
+- **Lint** - weryfikacja zgodności kodu ze standardami
+- **Unit Tests** - wykonanie testów jednostkowych z raportem pokrycia kodu
+- **E2E Tests** - wykonanie testów end-to-end w środowisku integracyjnym
+
+### Workflow `main.yml`
+
+Uruchamiany przy tworzeniu nowych tagów oraz manualnie:
+
+- **Lint** - weryfikacja zgodności kodu ze standardami
+- **Unit Tests** - wykonanie testów jednostkowych
+- **Build and Deploy** - budowanie aplikacji i wdrażanie jej do Cloudflare Pages
+
+### Workflow `pull-request.yml`
+
+Uruchamiany dla każdego pull request do branch `main` oraz manualnie:
+
+- **Lint** - weryfikacja zgodności kodu ze standardami
+- **Unit Tests** - wykonanie testów jednostkowych
+- **E2E Tests** - wykonanie testów end-to-end
+- **Status Comment** - automatyczne dodanie komentarza do PR z podsumowaniem weryfikacji
 
 ## Licencja
 
