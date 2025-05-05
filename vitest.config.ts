@@ -1,6 +1,4 @@
-/// <reference types="vitest" />
-/// <reference types="@testing-library/jest-dom" />
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
@@ -16,17 +14,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      exclude: [
-        "node_modules/",
-        "src/test/",
-        "**/*.d.ts",
-        "**/*.test.{ts,tsx}",
-        "**/*.config.{js,ts}",
-        "**/*.mjs",
-        "dist",
-        "e2e",
-        "playwright.config.ts",
-      ],
+      exclude: [...configDefaults.exclude, "e2e/**"],
     },
     include: ["**/*.test.{ts,tsx}"],
     exclude: ["node_modules", ".astro", "dist", "e2e", "playwright.config.ts", "__mocks__"],
