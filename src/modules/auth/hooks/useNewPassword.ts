@@ -15,11 +15,11 @@ export const useNewPassword = () => {
   useEffect(() => {
     const getTokenFromUrl = () => {
       if (typeof window === "undefined") return null;
-      const params = new URLSearchParams(window.location.search);
-      return params.get("code");
+      const tokenHash = new URLSearchParams(window.location.search).get("token_hash");
+      return tokenHash;
     };
 
-    const verifyToken = async (code: string) => {
+    const verifyToken = async (tokenHash: string) => {
       setIsTokenChecking(true);
       try {
         const response = await fetch("/api/auth/verify-reset-token", {
@@ -27,7 +27,7 @@ export const useNewPassword = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ token_hash: code }),
+          body: JSON.stringify({ token_hash: tokenHash }),
         });
 
         if (!response.ok) {
@@ -36,7 +36,7 @@ export const useNewPassword = () => {
         }
 
         setIsTokenValid(true);
-        setTokenHash(code);
+        setTokenHash(tokenHash);
       } catch (err) {
         setIsTokenValid(false);
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas weryfikacji tokenu");
