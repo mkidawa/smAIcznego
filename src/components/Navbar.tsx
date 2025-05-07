@@ -18,10 +18,10 @@ const Navbar = () => {
   return (
     <div className="border-b">
       <div className="flex h-16 items-center px-4 container mx-auto justify-between">
-        <NavigationMenu>
+        <NavigationMenu delayDuration={0}>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Diety</NavigationMenuTrigger>
+              <NavigationMenuTrigger className="cursor-pointer">Diety</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid gap-3 p-6 w-[400px]">
                   <ListItem href="/diets" title="Lista diet">
