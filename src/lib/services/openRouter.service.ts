@@ -66,6 +66,7 @@ export class OpenRouterService {
     meals_per_day: number;
     preferences?: string[];
     allergies?: string[];
+    dietary_preferences?: string;
   }): Promise<OpenRouterResponse> {
     try {
       this.logger.info("Starting diet plan generation", { params });
@@ -84,6 +85,7 @@ export class OpenRouterService {
     meals_per_day: number;
     preferences?: string[];
     allergies?: string[];
+    dietary_preferences?: string;
   }): string {
     let message = `Proszę o wygenerowanie ${params.number_of_days} - dniowego planu diety o kaloryczności ${params.calories_per_day} kcal i ${params.meals_per_day} posiłków dziennie w języku polskim. W diecie niech każdy dzień będzie opisany dokładnie, czyli nie na przykład kurczak z warzywami tylko kurczak z pieprzem i solą z marchewką itd. Dodatkowo niech lista zakupów będzie zawierała dokładne ilości potrzebne do przygotowania posiłków.`;
 
@@ -93,6 +95,10 @@ export class OpenRouterService {
 
     if (params.allergies?.length) {
       message += ` Alergie: ${params.allergies.join(", ")}.`;
+    }
+
+    if (params.dietary_preferences) {
+      message += ` Dodatkowe preferencje żywieniowe: ${params.dietary_preferences}.`;
     }
 
     return message;

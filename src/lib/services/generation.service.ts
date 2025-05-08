@@ -31,13 +31,13 @@ export class GenerationService {
     return this.userId;
   }
 
-  private async getUserAllergies(): Promise<string[]> {
+  private async getUserAllergies(): Promise<{ allergies: string[]; dietary_preferences?: string }> {
     const userId = await this.initializeUserId();
     this.logger.info("Fetching user allergies", { userId });
 
     const { data: profile, error } = await this.supabase
       .from("profiles")
-      .select("allergies")
+      .select("allergies, dietary_preferences")
       .eq("user_id", userId)
       .single();
 
@@ -46,7 +46,10 @@ export class GenerationService {
       throw new ServerError("Failed to fetch user allergies", error);
     }
 
-    return profile?.allergies || [];
+    return {
+      allergies: profile?.allergies || [],
+      dietary_preferences: profile?.dietary_preferences || undefined,
+    };
   }
 
   async createGeneration(data: CreateGenerationWithRequestUrl): Promise<CreateGenerationResponse> {
@@ -130,9 +133,13 @@ export class GenerationService {
     this.logger.info("Starting generation processing", { generationId });
 
     try {
-      // Fetch user allergies
-      const allergies = await this.getUserAllergies();
-      this.logger.info("Retrieved user allergies", { generationId, allergiesCount: allergies.length });
+      // Fetch user allergies and preferences
+      const { allergies, dietary_preferences } = await this.getUserAllergies();
+      this.logger.info("Retrieved user allergies and preferences", {
+        generationId,
+        allergiesCount: allergies.length,
+        hasPreferences: !!dietary_preferences,
+      });
 
       // Initialize OpenRouterService
       const openRouter = new OpenRouterService();
@@ -142,13 +149,15 @@ export class GenerationService {
         generationId,
         params,
         allergiesCount: allergies.length,
+        hasPreferences: !!dietary_preferences,
       });
 
-      // Execute the diet plan generation with allergies
+      // Execute the diet plan generation with allergies and preferences
       try {
         const response = await openRouter.generateDietPlan({
           ...params,
           allergies,
+          dietary_preferences,
         });
 
         // Update generation status to completed and save response in metadata

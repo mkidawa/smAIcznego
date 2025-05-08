@@ -32,6 +32,7 @@ export interface ProfileResponse {
   gender: string | null;
   weight: number | null;
   allergies: string[];
+  dietary_preferences: string | null;
   terms_accepted: boolean;
 }
 

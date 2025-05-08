@@ -63,6 +63,14 @@ export const ProfileDetails = ({ profile, onEdit }: ProfileDetailsProps) => {
             <p className="text-lg font-medium">Brak alergii</p>
           )}
         </div>
+        <div>
+          <p className="text-sm text-muted-foreground mb-2">Preferencje żywieniowe</p>
+          {profile.dietary_preferences ? (
+            <p className="text-lg font-medium">{profile.dietary_preferences}</p>
+          ) : (
+            <p className="text-lg font-medium">Nie określono preferencji</p>
+          )}
+        </div>
       </CardContent>
       <CardFooter>
         <Button onClick={onEdit} className="w-full cursor-pointer">

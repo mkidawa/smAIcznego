@@ -43,6 +43,10 @@ const profileFormSchema = z.object({
     .positive({ message: "Waga musi być liczbą dodatnią" })
     .max(300, { message: "Waga nie może przekraczać 300 kg" }),
   allergies: z.array(z.string()),
+  dietary_preferences: z
+    .string()
+    .max(100, { message: "Preferencje żywieniowe nie mogą przekraczać 100 znaków" })
+    .optional(),
   terms_accepted: z.boolean().refine((val) => val === true, {
     message: "Musisz zaakceptować warunki korzystania z usługi",
   }),
@@ -68,6 +72,7 @@ export function ProfileEditForm({ profile, onCancel, onSubmit }: ProfileEditForm
       gender: (profile.gender as "male" | "female" | "other" | undefined) || undefined,
       weight: profile.weight || undefined,
       allergies: profile.allergies || [],
+      dietary_preferences: profile.dietary_preferences || "",
       terms_accepted: profile.terms_accepted,
     },
   });
@@ -262,6 +267,29 @@ export function ProfileEditForm({ profile, onCancel, onSubmit }: ProfileEditForm
                       </div>
                     )}
                   </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dietary_preferences"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Preferencje żywieniowe <span className="text-xs text-muted-foreground">(opcjonalnie)</span>
+                  </FormLabel>
+                  <FormDescription>
+                    Wprowadź dodatkowe informacje o swoich preferencjach żywieniowych (max. 100 znaków)
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      placeholder="np. preferuję dania wegetariańskie, nie lubię ostrych potraw"
+                      {...field}
+                      maxLength={100}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

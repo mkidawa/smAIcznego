@@ -10,6 +10,7 @@ export const createProfileSchema = z.object({
   gender: z.enum(["male", "female", "other"]),
   weight: z.number().positive().max(300),
   allergies: z.array(z.string()).optional(),
+  dietary_preferences: z.string().max(100).optional(),
   terms_accepted: z.boolean().refine((val) => val === true, {
     message: "Terms must be accepted",
   }),
@@ -47,6 +48,7 @@ export class ProfileService {
         gender: data.gender,
         weight: data.weight,
         allergies: data.allergies,
+        dietary_preferences: data.dietary_preferences,
         terms_accepted: data.terms_accepted,
       };
     } catch (error) {
@@ -94,6 +96,7 @@ export class ProfileService {
         gender: newProfile.gender,
         weight: newProfile.weight,
         allergies: newProfile.allergies,
+        dietary_preferences: newProfile.dietary_preferences,
         terms_accepted: newProfile.terms_accepted,
       };
     } catch (error) {
@@ -142,6 +145,7 @@ export class ProfileService {
         gender: updatedProfile.gender,
         weight: updatedProfile.weight,
         allergies: updatedProfile.allergies,
+        dietary_preferences: updatedProfile.dietary_preferences,
         terms_accepted: updatedProfile.terms_accepted,
       };
     } catch (error) {
