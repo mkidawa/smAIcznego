@@ -10,7 +10,7 @@ export class OpenRouterService {
   private readonly logger = Logger.getInstance();
 
   private readonly _defaultSystemMessage: string =
-    "Jesteś ekspertem w planowaniu diet. Twoim zadaniem jest tworzenie spersonalizowanych planów posiłków wraz z listami zakupów. MUSISZ odpowiadać TYLKO w formacie JSON zawierającym obiekt z dwoma kluczami: 'diet_plan' i 'shopping_list'. Nie dodawaj żadnego tekstu przed ani po JSON. Format odpowiedzi musi być zgodny z dostarczonym schematem. Zacznij numerowanie posiłków (meal_number_in_day) i dni (day) od 0.";
+    "Jesteś ekspertem w planowaniu diet. Twoim zadaniem jest tworzenie spersonalizowanych planów posiłków wraz z listami zakupów. MUSISZ odpowiadać TYLKO w formacie JSON zawierającym obiekt z dwoma kluczami: 'diet_plan' i 'shopping_list' w języku polskim. Nie dodawaj żadnego tekstu przed ani po JSON. Format odpowiedzi musi być zgodny z dostarczonym schematem. Zacznij numerowanie posiłków (meal_number_in_day) i dni (day) od 0.";
   private readonly _defaultModelName: string = "openai/gpt-4o-mini";
   private readonly _defaultModelParameters = {
     temperature: 0.7,
@@ -85,7 +85,7 @@ export class OpenRouterService {
     preferences?: string[];
     allergies?: string[];
   }): string {
-    let message = `Proszę o wygenerowanie ${params.number_of_days} - dniowego planu diety o kaloryczności ${params.calories_per_day} kcal i ${params.meals_per_day} posiłków dziennie. W diecie niech każdy dzień będzie opisany dokładnie, czyli nie na przykład kurczak z warzywami tylko kurczak z pieprzem i solą z marchewką itd. Dodatkowo niech lista zakupów będzie zawierała dokładne ilości potrzebne do przygotowania posiłków.`;
+    let message = `Proszę o wygenerowanie ${params.number_of_days} - dniowego planu diety o kaloryczności ${params.calories_per_day} kcal i ${params.meals_per_day} posiłków dziennie w języku polskim. W diecie niech każdy dzień będzie opisany dokładnie, czyli nie na przykład kurczak z warzywami tylko kurczak z pieprzem i solą z marchewką itd. Dodatkowo niech lista zakupów będzie zawierała dokładne ilości potrzebne do przygotowania posiłków.`;
 
     if (params.preferences?.length) {
       message += ` Preferencje: ${params.preferences.join(", ")}.`;
