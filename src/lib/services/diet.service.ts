@@ -153,22 +153,24 @@ export class DietService {
     // Calculate offset for pagination
     const offset = (page - 1) * per_page;
 
-    // Get total count of diets for pagination
+    // Get total count of non-archived diets for pagination
     const { count, error: countError } = await this.supabase
       .from("diets")
       .select("*", { count: "exact", head: true })
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .neq("status", "archived");
 
     if (countError) {
       this.logger.error("Failed to get total count of diets", countError);
       throw new ServerError("Failed to get total count of diets");
     }
 
-    // Get paginated diets
+    // Get paginated non-archived diets
     const { data: diets, error: dietsError } = await this.supabase
       .from("diets")
       .select("*")
       .eq("user_id", userId)
+      .neq("status", "archived")
       .order("created_at", { ascending: false })
       .range(offset, offset + per_page - 1);
 
@@ -186,5 +188,43 @@ export class DietService {
 
     this.logger.info("Diets retrieved successfully", { page, per_page, total: count, userId });
     return new Response(JSON.stringify(response), { status: 200 });
+  }
+
+  async archiveDiet(dietId: number) {
+    const userId = await this.initializeUserId();
+    this.logger.info("Starting diet archival", { dietId });
+
+    // Check if diet exists and belongs to user
+    const { data: existingDiet, error: checkError } = await this.supabase
+      .from("diets")
+      .select("*")
+      .eq("id", dietId)
+      .eq("user_id", userId)
+      .single();
+
+    if (checkError || !existingDiet) {
+      this.logger.warn("Diet not found or unauthorized", { dietId, error: checkError });
+      throw new NotFoundError("Diet not found");
+    }
+
+    if (existingDiet.status === "archived") {
+      this.logger.warn("Diet is already archived", { dietId });
+      throw new ConflictError("Diet is already archived");
+    }
+
+    // Update diet status to archived
+    const { error: updateError } = await this.supabase
+      .from("diets")
+      .update({ status: "archived" })
+      .eq("id", dietId)
+      .eq("user_id", userId);
+
+    if (updateError) {
+      this.logger.error("Failed to archive diet", updateError, { dietId });
+      throw new ServerError("Failed to archive diet");
+    }
+
+    this.logger.info("Diet archived successfully", { dietId });
+    return new Response(JSON.stringify({ message: "Diet archived successfully" }), { status: 200 });
   }
 }

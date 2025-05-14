@@ -8,6 +8,19 @@ import { navigate } from "astro:transitions/client";
 import type { MealItem } from "../../diet.types";
 import { MEALS_MAP } from "@/lib/constants";
 import { groupMealsByDay } from "../utils/groupMealsByDay";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useArchiveDiet } from "../hooks/useArchiveDiet";
 
 interface DietViewProps {
   dietId: number;
@@ -15,6 +28,7 @@ interface DietViewProps {
 
 export const DietDetailsView = ({ dietId }: DietViewProps) => {
   const { dietDetails, isLoading, error } = useGetDietDetail({ dietId: dietId || 0 });
+  const { archiveDiet, isArchiving } = useArchiveDiet();
 
   if (error) {
     toast.error(error);
@@ -26,7 +40,7 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
   }
 
   if (!dietDetails) {
-    navigate("/diets/generate");
+    navigate("/diets");
     return null;
   }
 
@@ -37,6 +51,8 @@ export const DietDetailsView = ({ dietId }: DietViewProps) => {
         caloriesPerDay={dietDetails.calories_per_day}
         startDate={dietDetails.created_at}
         endDate={dietDetails.end_date}
+        onArchive={() => archiveDiet(dietId)}
+        isArchiving={isArchiving}
       />
 
       <Tabs defaultValue="plan" className="mt-8">
@@ -105,18 +121,54 @@ const SummaryCard = ({
   caloriesPerDay,
   startDate,
   endDate,
+  onArchive,
+  isArchiving,
 }: {
   numberOfDays: number;
   caloriesPerDay: number;
   startDate: string;
   endDate: string;
+  onArchive: () => void;
+  isArchiving: boolean;
 }) => (
   <Card>
-    <CardHeader>
-      <CardTitle>Twój Plan Diety</CardTitle>
-      <CardDescription>
-        Plan na {numberOfDays} dni, {caloriesPerDay} kalorii dziennie
-      </CardDescription>
+    <CardHeader className="flex flex-row items-center justify-between">
+      <div>
+        <CardTitle>Twój Plan Diety</CardTitle>
+        <CardDescription>
+          Plan na {numberOfDays} dni, {caloriesPerDay} kalorii dziennie
+        </CardDescription>
+      </div>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
+          >
+            <Trash2 className="h-5 w-5" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Czy na pewno chcesz zarchiwizować tę dietę?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ta akcja spowoduje przeniesienie diety do archiwum. Zarchiwizowana dieta nie będzie widoczna na głównej
+              liście diet.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Anuluj</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onArchive}
+              disabled={isArchiving}
+              className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            >
+              {isArchiving ? "Archiwizowanie..." : "Archiwizuj"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </CardHeader>
     <CardContent>
       <div className="space-y-2 text-sm text-muted-foreground">

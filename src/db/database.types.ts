@@ -266,7 +266,7 @@ export interface Database {
         | "gluten-free"
         | "keto"
         | "paleo";
-      diet_status: "draft" | "meals_ready" | "ready";
+      diet_status: "draft" | "meals_ready" | "ready" | "archived";
       meal_type: "breakfast" | "second breakfast" | "lunch" | "afternoon snack" | "dinner";
     };
     CompositeTypes: Record<never, never>;
@@ -375,7 +375,7 @@ export const Constants = {
   public: {
     Enums: {
       cuisine_type: ["polish", "italian", "indian", "asian", "vegan", "vegetarian", "gluten-free", "keto", "paleo"],
-      diet_status: ["draft", "meals_ready", "ready"],
+      diet_status: ["draft", "meals_ready", "ready", "archived"],
       meal_type: ["breakfast", "second breakfast", "lunch", "afternoon snack", "dinner"],
     },
   },
