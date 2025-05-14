@@ -142,6 +142,7 @@ const SummaryCard = ({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
+            data-testid="archive-diet-button"
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
@@ -158,8 +159,11 @@ const SummaryCard = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Anuluj</AlertDialogCancel>
+            <AlertDialogCancel data-testid="cancel-archive-button" className="cursor-pointer">
+              Anuluj
+            </AlertDialogCancel>
             <AlertDialogAction
+              data-testid="confirm-archive-button"
               onClick={onArchive}
               disabled={isArchiving}
               className="bg-destructive hover:bg-destructive/90 cursor-pointer"

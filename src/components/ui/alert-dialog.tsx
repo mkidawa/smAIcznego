@@ -31,7 +31,7 @@ function AlertDialogOverlay({ className, ...props }: React.ComponentProps<typeof
 
 function AlertDialogContent({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
   return (
-    <AlertDialogPortal>
+    <AlertDialogPortal data-testid="alert-dialog-portal">
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
