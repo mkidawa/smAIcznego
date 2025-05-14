@@ -81,7 +81,7 @@ describe("DietDetailsView", () => {
     });
   });
 
-  it("redirects to diet generation page when no data is available", async () => {
+  it("redirects to diets page when no data is available", async () => {
     server.use(
       http.get("/api/diets/:id", () => {
         return HttpResponse.json(null);
@@ -91,7 +91,7 @@ describe("DietDetailsView", () => {
     render(<DietDetailsView dietId={1} />);
 
     await waitFor(() => {
-      expect(vi.mocked(navigate)).toHaveBeenCalledWith("/diets/generate");
+      expect(vi.mocked(navigate)).toHaveBeenCalledWith("/diets");
     });
   });
 
